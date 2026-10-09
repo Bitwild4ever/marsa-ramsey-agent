@@ -44,6 +44,26 @@ TRAIN_INSTANCES = (
     Instance(4, 6, 35),
 )
 
+# 扩展训练集：用于区分"记忆无用"与"记忆因训练数据太少而无用"。
+# 刻意**避开**所有 held-out 实例（(5,5)@40/44、(4,6)@36、(4,5)@24），
+# 否则 held-out 协议就被破坏了。
+EXTENDED_TRAIN_INSTANCES = (
+    Instance(5, 5, 34),
+    Instance(5, 5, 36),
+    Instance(5, 5, 38),
+    Instance(5, 5, 42),
+    Instance(5, 5, 43),
+    Instance(5, 5, 45),
+    Instance(4, 6, 33),
+    Instance(4, 6, 35),
+    Instance(4, 6, 37),
+    Instance(4, 5, 21),
+    Instance(4, 5, 23),
+    Instance(4, 4, 16),
+    Instance(4, 4, 17),
+    Instance(3, 7, 22),
+)
+
 # held-out：最终结论只看这些；规模与形状都与训练集不同，且不参与任何调参
 HELD_OUT_INSTANCES = (
     Instance(5, 5, 40),

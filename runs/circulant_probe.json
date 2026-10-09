@@ -1,0 +1,157 @@
+{
+  "config": {
+    "seconds": 20.0,
+    "seeds": 3,
+    "nmin": 28,
+    "nmax": 43,
+    "s": 5,
+    "t": 5,
+    "tag": "circulant_probe"
+  },
+  "rows": [
+    {
+      "n": 28,
+      "bits": 14,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "evals": 85
+    },
+    {
+      "n": 29,
+      "bits": 14,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "evals": 57
+    },
+    {
+      "n": 30,
+      "bits": 15,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "evals": 163
+    },
+    {
+      "n": 31,
+      "bits": 15,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "evals": 134
+    },
+    {
+      "n": 32,
+      "bits": 16,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "evals": 584
+    },
+    {
+      "n": 33,
+      "bits": 16,
+      "best": 0,
+      "mean": 22,
+      "solved": true,
+      "verified": true,
+      "evals": 7689
+    },
+    {
+      "n": 34,
+      "bits": 17,
+      "best": 0,
+      "mean": 22.67,
+      "solved": true,
+      "verified": true,
+      "evals": 8286
+    },
+    {
+      "n": 35,
+      "bits": 17,
+      "best": 0,
+      "mean": 23.33,
+      "solved": true,
+      "verified": true,
+      "evals": 7638
+    },
+    {
+      "n": 36,
+      "bits": 18,
+      "best": 0,
+      "mean": 12,
+      "solved": true,
+      "verified": true,
+      "evals": 3329
+    },
+    {
+      "n": 37,
+      "bits": 18,
+      "best": 0,
+      "mean": 61.67,
+      "solved": true,
+      "verified": true,
+      "evals": 4848
+    },
+    {
+      "n": 38,
+      "bits": 19,
+      "best": 0,
+      "mean": 76,
+      "solved": true,
+      "verified": true,
+      "evals": 7432
+    },
+    {
+      "n": 39,
+      "bits": 19,
+      "best": 39,
+      "mean": 78,
+      "solved": false,
+      "verified": false,
+      "evals": 6766
+    },
+    {
+      "n": 40,
+      "bits": 20,
+      "best": 80,
+      "mean": 96,
+      "solved": false,
+      "verified": false,
+      "evals": 6616
+    },
+    {
+      "n": 41,
+      "bits": 20,
+      "best": 164,
+      "mean": 218.67,
+      "solved": false,
+      "verified": false,
+      "evals": 6040
+    },
+    {
+      "n": 42,
+      "bits": 21,
+      "best": 294,
+      "mean": 378,
+      "solved": false,
+      "verified": false,
+      "evals": 5451
+    },
+    {
+      "n": 43,
+      "bits": 21,
+      "best": 387,
+      "mean": 444.33,
+      "solved": false,
+      "verified": false,
+      "evals": 4898
+    }
+  ]
+}

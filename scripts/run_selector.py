@@ -37,8 +37,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from marsa.benchmark import (                                   # noqa: E402
-    BUDGETS, DEFAULT_SEEDS, HELD_OUT_INSTANCES, TRAIN_INSTANCES,
-    Cell, cells, load_results,
+    BUDGETS, DEFAULT_SEEDS, EXTENDED_TRAIN_INSTANCES,
+    HELD_OUT_INSTANCES, TRAIN_INSTANCES, Cell, cells, load_results,
 )
 from marsa.operators import default_portfolio                    # noqa: E402
 from marsa.selector import PortfolioSelector                     # noqa: E402
@@ -118,9 +118,12 @@ def main() -> None:
     data = load_results()
     policies = [p.name for p in default_portfolio()]
     budget = float(sys.argv[1]) if len(sys.argv) > 1 else None
+    train_kind = sys.argv[2] if len(sys.argv) > 2 else "train"
     bs = [budget] if budget else list(BUDGETS)
+    train_inst = (EXTENDED_TRAIN_INSTANCES if train_kind == "train_ext"
+                  else TRAIN_INSTANCES)
 
-    train_cells = [c for c in cells(TRAIN_INSTANCES, bs)]
+    train_cells = [c for c in cells(train_inst, bs)]
     held_cells = [c for c in cells(HELD_OUT_INSTANCES, bs)]
     mtr = build_matrix(data, policies, train_cells)
     mhe = build_matrix(data, policies, held_cells)
@@ -145,8 +148,8 @@ def main() -> None:
         return
 
     print("=" * 84)
-    print(f"组合选择器判决实验   预算档={bs}   "
-          f"训练单元={len(train_keys)}  held-out 单元={len(held_keys)}")
+    print(f"组合选择器判决实验   预算档={bs}   训练集={train_kind}"
+          f"（{len(train_keys)} 单元）  held-out={len(held_keys)} 单元")
     print(f"在两套单元上都完整的算子：{len(both)}/{len(policies)}")
     print("=" * 84)
 

@@ -15,8 +15,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from marsa.benchmark import (                                   # noqa: E402
-    DEFAULT_SEEDS, HELD_OUT_INSTANCES, TRAIN_INSTANCES, analyze,
-    cells, load_results, run_grid,
+    DEFAULT_SEEDS, EXTENDED_TRAIN_INSTANCES, HELD_OUT_INSTANCES,
+    TRAIN_INSTANCES, analyze, cells, load_results, run_grid,
 )
 from marsa.operators import default_portfolio                    # noqa: E402
 
@@ -24,7 +24,7 @@ from marsa.operators import default_portfolio                    # noqa: E402
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", default="train",
-                    choices=["train", "heldout", "analyze"])
+                    choices=["train", "train_ext", "heldout", "analyze"])
     ap.add_argument("--budgets", default=None,
                     help="逗号分隔，如 0.5,3.0；默认用 benchmark 里的定义")
     ap.add_argument("--seeds", default=None, help="逗号分隔，如 0,1,2")
@@ -39,12 +39,15 @@ def main() -> None:
 
     print(f"算子库 {len(policies)} 个；预算 {budgets or '默认'}；seeds {seeds}")
 
-    if args.stage == "train":
-        cs = cells(TRAIN_INSTANCES, budgets) if budgets else cells(TRAIN_INSTANCES)
-        print(f"\n【训练集网格】{len(cs)} 个单元 × {len(policies)} 个算子 "
+    if args.stage in ("train", "train_ext"):
+        inst = (EXTENDED_TRAIN_INSTANCES if args.stage == "train_ext"
+                else TRAIN_INSTANCES)
+        label = "扩展训练集" if args.stage == "train_ext" else "训练集"
+        cs = cells(inst, budgets) if budgets else cells(inst)
+        print(f"\n【{label}网格】{len(cs)} 个单元 × {len(policies)} 个算子 "
               f"× {len(seeds)} seeds = {len(cs) * len(policies) * len(seeds)} 次运行")
         data = run_grid(policies, cs, seeds, verbose=not args.quiet)
-        analyze(data, policies, cs, "训练集")
+        analyze(data, policies, cs, label)
     elif args.stage == "heldout":
         cs = (cells(HELD_OUT_INSTANCES, budgets) if budgets
               else cells(HELD_OUT_INSTANCES))
