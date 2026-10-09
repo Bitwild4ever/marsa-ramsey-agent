@@ -1,0 +1,122 @@
+{
+  "config": {
+    "budget": 20.0,
+    "seeds": 2,
+    "op": "tabu_focus",
+    "s": 5,
+    "t": 5,
+    "nmin": 34,
+    "nmax": 45,
+    "tag": "frontier"
+  },
+  "rows": [
+    {
+      "n": 34,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "graph6": "aj?xNwyOkOWbMYFBd[r``UtED}~]S?lwRiFyi\\WEsr`ptKgcb}xPswu|nPMkTO~qLE|qVq[b[MhieMbYXw[MVdKROUkrd@g",
+      "seconds": 0.241
+    },
+    {
+      "n": 35,
+      "best": 0,
+      "mean": 0,
+      "solved": true,
+      "verified": true,
+      "graph6": "bcvD_]OMuL~_nwNoTkTlzRMKT[rBawFYhgmEb^rP[~@qy`dChQrWrrklfKtqOrRS{rHOvHPr?vgB\\WzXNQnAtx_F{OwlxdBdGRH^_",
+      "seconds": 2.323
+    },
+    {
+      "n": 36,
+      "best": 0,
+      "mean": 0.5,
+      "solved": true,
+      "verified": true,
+      "graph6": "cZXXg\\Vx[yP@{gy\\sYCa]GfSFZx[L^WPshA@dG]yw|lraWuealDx_eX]Mbt]DL@QKXslC^THlzgpZcYV[ffQI[bEumRZhqAFYZ~`WUfFIY",
+      "seconds": 15.444
+    },
+    {
+      "n": 37,
+      "best": 5,
+      "mean": 6,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 38,
+      "best": 17,
+      "mean": 17.5,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.0
+    },
+    {
+      "n": 39,
+      "best": 31,
+      "mean": 32,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 40,
+      "best": 53,
+      "mean": 54,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 41,
+      "best": 65,
+      "mean": 74,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 42,
+      "best": 110,
+      "mean": 110.5,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 43,
+      "best": 142,
+      "mean": 145.5,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 44,
+      "best": 189,
+      "mean": 192,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    },
+    {
+      "n": 45,
+      "best": 240,
+      "mean": 240.5,
+      "solved": false,
+      "verified": false,
+      "graph6": "",
+      "seconds": 20.001
+    }
+  ]
+}

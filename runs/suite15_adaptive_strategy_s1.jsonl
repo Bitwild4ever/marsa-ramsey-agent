@@ -1,0 +1,5 @@
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "sa", "seconds": 1.5052, "steps": 130048, "init_cost": 1972, "best_cost": 759, "reward": 0.615112}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "tabu", "seconds": 1.5004, "steps": 206, "init_cost": 2377, "best_cost": 230, "reward": 0.903239}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "tabu", "seconds": 1.5032, "steps": 209, "init_cost": 2058, "best_cost": 245, "reward": 0.880952}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "sa", "seconds": 1.5035, "steps": 136192, "init_cost": 1844, "best_cost": 834, "reward": 0.547722}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "tabu", "seconds": 1.5006, "steps": 210, "init_cost": 1591, "best_cost": 226, "reward": 0.857951}

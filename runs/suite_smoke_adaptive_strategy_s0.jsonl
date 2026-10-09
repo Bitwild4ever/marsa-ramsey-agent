@@ -1,0 +1,3 @@
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "sa", "seconds": 0.6061, "steps": 54784, "init_cost": 1894, "best_cost": 865, "reward": 0.543295}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "tabu", "seconds": 0.6052, "steps": 81, "init_cost": 2076, "best_cost": 434, "reward": 0.790944}
+{"n": 43, "s": 5, "t": 5, "bucket": "large", "operator": "tabu", "seconds": 0.6034, "steps": 83, "init_cost": 1732, "best_cost": 418, "reward": 0.758661}

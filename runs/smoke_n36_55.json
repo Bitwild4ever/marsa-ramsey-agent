@@ -1,0 +1,67 @@
+{
+  "config": {
+    "n": 36,
+    "s": 5,
+    "t": 5,
+    "episodes": 5,
+    "steps": 20000,
+    "seeds": 1,
+    "operator": "sa",
+    "tag": "smoke"
+  },
+  "results": {
+    "none": [
+      {
+        "seed": 0,
+        "best_cost": 10,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 0,
+        "n_improved_over_init": 0,
+        "first_episode_best": 26,
+        "last_episode_best": 10,
+        "log": "D:\\myagent\\runs\\smoke_none_seed0.jsonl"
+      }
+    ],
+    "random": [
+      {
+        "seed": 0,
+        "best_cost": 17,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 4,
+        "n_improved_over_init": 4,
+        "first_episode_best": 26,
+        "last_episode_best": 17,
+        "log": "D:\\myagent\\runs\\smoke_random_seed0.jsonl"
+      }
+    ],
+    "nearest": [
+      {
+        "seed": 0,
+        "best_cost": 21,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 4,
+        "n_improved_over_init": 4,
+        "first_episode_best": 26,
+        "last_episode_best": 27,
+        "log": "D:\\myagent\\runs\\smoke_nearest_seed0.jsonl"
+      }
+    ],
+    "submodular": [
+      {
+        "seed": 0,
+        "best_cost": 22,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 4,
+        "n_improved_over_init": 4,
+        "first_episode_best": 26,
+        "last_episode_best": 22,
+        "log": "D:\\myagent\\runs\\smoke_submodular_seed0.jsonl"
+      }
+    ]
+  },
+  "elapsed": 4.29692329998943
+}

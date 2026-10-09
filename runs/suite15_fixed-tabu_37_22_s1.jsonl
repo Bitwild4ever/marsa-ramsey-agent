@@ -1,0 +1,2 @@
+{"type": "episode", "episode": 0, "task": "3,7,22", "n": 22, "s": 3, "t": 7, "operator": "tabu", "planned_steps": 1000000000, "steps_done": 275, "seconds": 0.675, "cost": 0, "best_cost": 0, "global_best_cost": 0, "memory_mode": "none", "retrieved": 0, "warm_started": false, "init_cost": 162, "warm_init_cost": null, "improved_over_init": true, "rationale": "[scripted] n=22 -> tabu/20000 步；记忆库样本不足，先冷启动积累 elite"}
+{"type": "final", "best_cost": 0, "solved": true, "solved_verified": true, "n_episodes": 1, "elapsed": 0.7, "planner_stats": null}

@@ -1,0 +1,111 @@
+{
+  "config": {
+    "n": 43,
+    "s": 5,
+    "t": 5,
+    "episodes": 12,
+    "steps": 3000,
+    "seeds": 2,
+    "operator": "sa",
+    "tag": "smallbudget"
+  },
+  "results": {
+    "none": [
+      {
+        "seed": 0,
+        "best_cost": 366,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 0,
+        "n_improved_over_init": 0,
+        "first_episode_best": 433,
+        "last_episode_best": 398,
+        "log": "D:\\myagent\\runs\\smallbudget_none_seed0.jsonl"
+      },
+      {
+        "seed": 1,
+        "best_cost": 358,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 0,
+        "n_improved_over_init": 0,
+        "first_episode_best": 419,
+        "last_episode_best": 437,
+        "log": "D:\\myagent\\runs\\smallbudget_none_seed1.jsonl"
+      }
+    ],
+    "random": [
+      {
+        "seed": 0,
+        "best_cost": 372,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 433,
+        "last_episode_best": 382,
+        "log": "D:\\myagent\\runs\\smallbudget_random_seed0.jsonl"
+      },
+      {
+        "seed": 1,
+        "best_cost": 382,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 419,
+        "last_episode_best": 419,
+        "log": "D:\\myagent\\runs\\smallbudget_random_seed1.jsonl"
+      }
+    ],
+    "nearest": [
+      {
+        "seed": 0,
+        "best_cost": 378,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 433,
+        "last_episode_best": 402,
+        "log": "D:\\myagent\\runs\\smallbudget_nearest_seed0.jsonl"
+      },
+      {
+        "seed": 1,
+        "best_cost": 373,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 419,
+        "last_episode_best": 422,
+        "log": "D:\\myagent\\runs\\smallbudget_nearest_seed1.jsonl"
+      }
+    ],
+    "submodular": [
+      {
+        "seed": 0,
+        "best_cost": 392,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 433,
+        "last_episode_best": 409,
+        "log": "D:\\myagent\\runs\\smallbudget_submodular_seed0.jsonl"
+      },
+      {
+        "seed": 1,
+        "best_cost": 383,
+        "solved": false,
+        "solved_verified": false,
+        "n_warm": 11,
+        "n_improved_over_init": 11,
+        "first_episode_best": 419,
+        "last_episode_best": 435,
+        "log": "D:\\myagent\\runs\\smallbudget_submodular_seed1.jsonl"
+      }
+    ]
+  },
+  "elapsed": 5.057261199995992
+}

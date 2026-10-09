@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 报告生成的中间产物
+tools/checks*.json
+tools/preview*/
+*.tmp
+
+# 若需要保留全部实测日志，请勿忽略 runs/。
+# 本项目刻意把 runs/ 纳入版本控制：139 个 JSONL 迭代日志是"智能体确实跑过"的证据。
+# 如需减小仓库体积，可取消下面这行的注释：
+# runs/*.jsonl
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
