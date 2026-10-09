@@ -117,8 +117,17 @@ def candidates_present(mat: dict[str, dict[str, float]],
 def main() -> None:
     data = load_results()
     policies = [p.name for p in default_portfolio()]
-    budget = float(sys.argv[1]) if len(sys.argv) > 1 else None
-    train_kind = sys.argv[2] if len(sys.argv) > 2 else "train"
+    # 参数可以是 "0.5"（预算）/"train"/"train_ext"，顺序任意
+    budget = None
+    train_kind = "train"
+    for a in sys.argv[1:]:
+        if a in ("train", "train_ext"):
+            train_kind = a
+        else:
+            try:
+                budget = float(a)
+            except ValueError:
+                print(f"忽略无法识别的参数: {a}")
     bs = [budget] if budget else list(BUDGETS)
     train_inst = (EXTENDED_TRAIN_INSTANCES if train_kind == "train_ext"
                   else TRAIN_INSTANCES)
