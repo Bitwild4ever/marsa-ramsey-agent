@@ -166,13 +166,18 @@ n=43，(5,5)，12 episodes × 3000 步，2 seeds：
 ## 快速开始
 
 只需要 **Python 3 + numpy**（图表用 Pillow）。无 GPU、无网络依赖。
+全部 **21 项测试**通过：`tests/test_core.py`（7）+ `tests/test_memory.py`（6）+
+`tests/test_planner.py`（8）。
 
 ```bash
-# 正确性验收（6 项，含与暴力枚举的交叉验证）
+# 正确性验收（7 项：与暴力枚举交叉验证、增量代价、团枚举、退火时间表回归等）
 python tests/test_core.py
 
-# 记忆模块测试（6 项）
+# 记忆模块测试（6 项：相似度、次模检索、扰动、持久化）
 python tests/test_memory.py
+
+# 规划器与策略记忆测试（8 项：LLM 路径 + 降级 + UCB1 学习）
+python tests/test_planner.py
 
 # 已知精确值阶梯：引擎验收门槛（应得 7/7）
 python scripts/ladder.py 20000 tabu_focus
