@@ -55,6 +55,35 @@ def count_cliques(mask: int, adj: list[int], k: int) -> int:
     return total
 
 
+def enumerate_cliques(mask: int, adj: list[int], k: int,
+                      limit: int = 0) -> list[tuple[int, ...]]:
+    """枚举 mask 诱导子图中的 k-团。按顶点递增序枚举，保证每个团只出现一次。
+
+    limit > 0 时最多返回 limit 个，用于在违反度很大时避免枚举爆炸。
+    """
+    res: list[tuple[int, ...]] = []
+
+    def rec(cur: int, chosen: list[int]) -> None:
+        if limit and len(res) >= limit:
+            return
+        if len(chosen) == k:
+            res.append(tuple(chosen))
+            return
+        m = cur
+        while m:
+            if limit and len(res) >= limit:
+                return
+            vb = m & -m
+            v = vb.bit_length() - 1
+            m ^= vb
+            rec(adj[v] & m, chosen + [v])
+
+    if k <= 0:
+        return [()]
+    rec(mask, [])
+    return res
+
+
 class Coloring:
     """K_n 的一个 2-染色，带有 (s,t) 违反度的增量维护。
 
@@ -134,6 +163,39 @@ class Coloring:
 
     def invalidate(self) -> None:
         self._cost = None
+
+    def violation_cliques(self, i: int, j: int,
+                          limit: int = 0) -> list[tuple[int, ...]]:
+        """经过边 (i,j) 的**具体**单色团（返回顶点元组列表）。
+
+        与 violations_through 只数个数不同，这里给出实际的团，用于
+        "按违反团构造候选边"的策略。
+        """
+        if self.is_red(i, j):
+            a = self.red[i] & self.red[j]
+            cs = enumerate_cliques(a, self.red, self.s - 2, limit)
+        else:
+            a = self.blue[i] & self.blue[j]
+            cs = enumerate_cliques(a, self.blue, self.t - 2, limit)
+        return [tuple(sorted((i, j) + c)) for c in cs]
+
+    def violation_edges(self, cap: int = 6000) -> list[tuple[int, int]]:
+        """收集当前所有违反团所涉及的边（用于 VLNS 式候选表）。
+
+        代价约等于一次 total_cost()，因此只应每隔若干步调用一次。
+        """
+        out: set[tuple[int, int]] = set()
+        for i in range(self.n):
+            for j in range(i + 1, self.n):
+                for c in self.violation_cliques(i, j):
+                    L = len(c)
+                    for a in range(L):
+                        for b in range(a + 1, L):
+                            x, y = c[a], c[b]
+                            out.add((x, y) if x < y else (y, x))
+                    if len(out) > cap:
+                        return sorted(out)
+        return sorted(out)
 
     def delta_of_flip(self, i: int, j: int) -> int:
         """**不修改状态**地计算翻转边 (i,j) 会带来的违反度变化。

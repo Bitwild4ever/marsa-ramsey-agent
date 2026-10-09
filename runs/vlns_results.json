@@ -1,0 +1,294 @@
+{
+  "config": {
+    "budget": 12.0,
+    "seeds": 4,
+    "ns": "37,38,39,40,42,43",
+    "s": 5,
+    "t": 5,
+    "tag": "vlns"
+  },
+  "rows": [
+    {
+      "n": 37,
+      "configs": {
+        "focus/128": {
+          "mean": 7.75,
+          "best": 7,
+          "worst": 9,
+          "values": [
+            7,
+            9,
+            8,
+            7
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 12,
+          "best": 10,
+          "worst": 14,
+          "values": [
+            14,
+            11,
+            10,
+            13
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 6,
+          "best": 5,
+          "worst": 8,
+          "values": [
+            5,
+            6,
+            5,
+            8
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    },
+    {
+      "n": 38,
+      "configs": {
+        "focus/128": {
+          "mean": 18.75,
+          "best": 17,
+          "worst": 21,
+          "values": [
+            19,
+            21,
+            18,
+            17
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 18.75,
+          "best": 16,
+          "worst": 22,
+          "values": [
+            18,
+            19,
+            16,
+            22
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 18,
+          "best": 13,
+          "worst": 22,
+          "values": [
+            20,
+            17,
+            13,
+            22
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    },
+    {
+      "n": 39,
+      "configs": {
+        "focus/128": {
+          "mean": 33,
+          "best": 31,
+          "worst": 36,
+          "values": [
+            36,
+            33,
+            32,
+            31
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 33,
+          "best": 28,
+          "worst": 37,
+          "values": [
+            35,
+            37,
+            28,
+            32
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 34.5,
+          "best": 33,
+          "worst": 37,
+          "values": [
+            37,
+            33,
+            34,
+            34
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    },
+    {
+      "n": 40,
+      "configs": {
+        "focus/128": {
+          "mean": 55,
+          "best": 52,
+          "worst": 59,
+          "values": [
+            55,
+            59,
+            52,
+            54
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 49.75,
+          "best": 47,
+          "worst": 54,
+          "values": [
+            54,
+            47,
+            49,
+            49
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 49,
+          "best": 42,
+          "worst": 54,
+          "values": [
+            46,
+            54,
+            42,
+            54
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    },
+    {
+      "n": 42,
+      "configs": {
+        "focus/128": {
+          "mean": 111.25,
+          "best": 104,
+          "worst": 118,
+          "values": [
+            118,
+            112,
+            111,
+            104
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 105.5,
+          "best": 101,
+          "worst": 108,
+          "values": [
+            108,
+            107,
+            101,
+            106
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 106.75,
+          "best": 102,
+          "worst": 112,
+          "values": [
+            107,
+            102,
+            106,
+            112
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    },
+    {
+      "n": 43,
+      "configs": {
+        "focus/128": {
+          "mean": 153.5,
+          "best": 148,
+          "worst": 159,
+          "values": [
+            148,
+            153,
+            154,
+            159
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/128": {
+          "mean": 151,
+          "best": 149,
+          "worst": 153,
+          "values": [
+            153,
+            149,
+            152,
+            150
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        },
+        "violation/256": {
+          "mean": 147.5,
+          "best": 142,
+          "worst": 155,
+          "values": [
+            142,
+            148,
+            155,
+            145
+          ],
+          "solved": false,
+          "verified": false,
+          "graph6": ""
+        }
+      }
+    }
+  ]
+}

@@ -227,8 +227,10 @@ class TabuConfig:
     #   "full"   评估全部边（最强单步，但 O(n^2)）
     #   "sample" 每步随机抽 candidate_size 条边
     #   "focus"  上一次移动的两个端点的关联边（活跃区）+ 随机补充
+    #   "violation" 当前**违反团所涉及的边**（VLNS 式聚焦，每 refresh 步重算）
     candidate_mode: str = "full"
     candidate_size: int = 128
+    candidate_refresh: int = 50
 
 
 def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
@@ -272,6 +274,7 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
         freq: dict[tuple[int, int], int] = {}
         since_improve = 0
         last_move: tuple[int, int] | None = None
+        viol_pool: list[tuple[int, int]] | None = None
 
         for it in range(cfg.steps):
             # ---- 构造候选边集合 ----
@@ -289,6 +292,17 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
                     if extra > 0:
                         local = local + rng.sample(edges, min(extra, len(edges)))
                     cand = local
+            elif cfg.candidate_mode == "violation":
+                if viol_pool is None or it % max(1, cfg.candidate_refresh) == 0:
+                    viol_pool = cur.violation_edges()
+                if not viol_pool:
+                    cand = rng.sample(edges, m_cand)
+                elif len(viol_pool) > m_cand:
+                    cand = rng.sample(viol_pool, m_cand)
+                else:
+                    extra = m_cand - len(viol_pool)
+                    cand = viol_pool + (rng.sample(edges, min(extra, len(edges)))
+                                        if extra > 0 else [])
             else:
                 raise ValueError(f"未知候选表策略: {cfg.candidate_mode}")
 
@@ -375,21 +389,22 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
 # 统一入口：规划器就是通过这个函数选择算子的
 # --------------------------------------------------------------------------
 
-OPERATORS = ("sa", "tabu", "tabu_focus", "tabu_sample")
+OPERATORS = ("sa", "tabu", "tabu_focus", "tabu_sample", "tabu_violation")
 
 
 def run_operator(op: str, cfg) -> SAResult:
     """统一入口：规划器就是通过这个函数选择算子的。
 
-    新增的 tabu_focus / tabu_sample 是**候选表禁忌**：
+    新增的 tabu_focus / tabu_sample / tabu_violation 都是**候选表禁忌**：
     不评估全部 C(n,2) 条边，只评估一个候选子集，从而把每步成本降下来。
-    实测在 n=43/46 上把最优代价分别压低约 16% / 21%（见 bench_candidates.py）。
+    实测 tabu_focus 在 n=43/46 上把最优代价压低约 16% / 20%
+    （见 bench_candidates.py）。
     """
     if op == "sa":
         return run_sa(cfg)
     if op == "tabu":
         return run_tabu(cfg)
-    if op in ("tabu_focus", "tabu_sample"):
+    if op in ("tabu_focus", "tabu_sample", "tabu_violation"):
         repl = replace(cfg, candidate_mode=op.split("_", 1)[1])
         return run_tabu(repl)
     raise ValueError(f"未知算子: {op}")

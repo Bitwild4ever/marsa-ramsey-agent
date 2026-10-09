@@ -151,6 +151,61 @@ def test_schedule_decoupled_from_steps() -> None:
        f"{fixed.steps_done:,} 步模式：{timed.best_cost} <= {fixed.best_cost}")
 
 
+def test_violation_enumeration() -> None:
+    """团枚举必须与"计数"和"暴力枚举"三者一致。
+
+    "按违反团构造候选边"这一策略完全依赖枚举的正确性，所以单独验收：
+      * sum over 边 of (#经过该边的单色团) == C(s,2)*#红K_s + C(t,2)*#蓝K_t
+      * 枚举出的具体团，必须真的每个都是单色完全子图
+      * violation_edges 里的每条边都必须真的属于某个违反团
+    """
+    print("\nH. 违反团枚举（VLNS 候选表的地基）")
+    rng = random.Random(31337)
+    checked = 0
+    for trial in range(12):
+        n = rng.randint(8, 14)
+        s, t = SHAPES[trial % len(SHAPES)]
+        if s > n or t > n:
+            continue
+        c = Coloring.random(n, s, t, rng, p=rng.choice([0.35, 0.5, 0.65]))
+        # 1) 枚举计数 vs 增量计数
+        acc_s = acc_t = 0
+        for i in range(n):
+            for j in range(i + 1, n):
+                cl = c.violation_cliques(i, j)
+                is_red = c.is_red(i, j)
+                if is_red:
+                    acc_s += len(cl)
+                else:
+                    acc_t += len(cl)
+                # 2) 每个枚举出的团必须真的是单色团
+                for quad in cl:
+                    assert len(quad) == (s if is_red else t), "团大小不对"
+                    for a, b in combinations(quad, 2):
+                        assert c.is_red(a, b) is is_red, "枚举出的团不是单色"
+        a0, b0 = 0, 0
+        for i in range(n):
+            for j in range(i + 1, n):
+                x, y = c.violations_through(i, j)
+                a0 += x
+                b0 += y
+        assert acc_s == a0 and acc_t == b0, (
+            f"枚举计数 {acc_s}/{acc_t} != 增量计数 {a0}/{b0}")
+        # 3) violation_edges 的每条边都应属于某个违反团
+        ve = c.violation_edges()
+        if c.cost() > 0:
+            assert ve, "代价 > 0 却收集不到任何违反边"
+            in_clique = set()
+            for i in range(n):
+                for j in range(i + 1, n):
+                    for quad in c.violation_cliques(i, j):
+                        for a, b in combinations(quad, 2):
+                            in_clique.add((min(a, b), max(a, b)))
+            assert set(ve) == in_clique, "violation_edges 与逐边枚举不一致"
+        checked += 1
+    ok(f"{checked} 组随机图：枚举计数 == 增量计数，且每个团都确实是单色完全子图")
+
+
 def bench() -> None:
     print("\nF. 性能标定（这决定迭代曲线能画多密）")
     rng = random.Random(1)
@@ -181,6 +236,7 @@ if __name__ == "__main__":
     test_graph6_roundtrip()
     test_known_small_values()
     test_schedule_decoupled_from_steps()
+    test_violation_enumeration()
     bench()
     print("\n" + "=" * 68)
     print(f"全部通过：{passed} 项测试")
