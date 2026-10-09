@@ -20,3 +20,7 @@ tools/preview*/
 .idea/
 *.swp
 .DS_Store
+
+# 渲染预览图（QA 中间产物 + 第三方资料渲染，不入库）
+tools/ref-*/
+tools/preview*/
