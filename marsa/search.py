@@ -58,6 +58,7 @@ class SAResult:
     restarts_done: int
     t0: float
     init_cost: int = 0
+    perturbations: int = 0
     trace: list[dict] = field(default_factory=list)
     elites: list[tuple[int, list[int]]] = field(default_factory=list)
 
@@ -231,6 +232,12 @@ class TabuConfig:
     candidate_mode: str = "full"
     candidate_size: int = 128
     candidate_refresh: int = 50
+    # ---- 卡住时的定向扰动（让算子之间产生真正不同的行为）----
+    #   stall_limit > 0 时，连续这么多步没有改进就扰动一次
+    #   perturb_mode: "random" 随机翻转 | "violation" 优先翻转违反团里的边
+    stall_limit: int = 0
+    perturb_edges: int = 2
+    perturb_mode: str = "violation"
 
 
 def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
@@ -253,6 +260,7 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
     elites: list[tuple[int, list[int]]] = []
     total_steps = 0
     restarts_done = 0
+    perturbations = 0
     global_best: int | None = None
     global_best_red: list[int] = []
     first_init_cost = 0
@@ -343,6 +351,26 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
             else:
                 since_improve += 1
 
+            # ---- 卡住 -> 定向扰动（跳出当前盆地）----
+            if cfg.stall_limit and since_improve >= cfg.stall_limit:
+                if cfg.perturb_mode == "violation":
+                    pool = cur.violation_edges()
+                    if not pool:
+                        pool = edges
+                else:
+                    pool = edges
+                for _ in range(max(1, cfg.perturb_edges)):
+                    pe = pool[rng.randrange(len(pool))]
+                    cur.apply_flip(pe[0], pe[1])
+                cost = cur.cost()
+                # 扰动改变了邻域结构，禁忌表与缓存都失效
+                tabu.clear()
+                freq.clear()
+                last_move = None
+                viol_pool = None
+                since_improve = 0
+                perturbations += 1
+
             if cfg.report_every and (it + 1) % cfg.report_every == 0:
                 trace.append({
                     "restart": r_idx,
@@ -355,6 +383,7 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
                     "accept_rate": 1.0,
                     "accept_bad_rate": 0.0,
                     "stall": since_improve,
+                    "perturbations": perturbations,
                 })
 
             if global_best <= cfg.target_cost:
@@ -380,8 +409,8 @@ def run_tabu(cfg: TabuConfig, rng: random.Random | None = None) -> SAResult:
         n=n, s=s, t=t,
         best_cost=global_best, best_red=global_best_red,
         steps_done=total_steps, restarts_done=restarts_done,
-        t0=0.0, init_cost=first_init_cost, trace=trace,
-        elites=uniq[:cfg.keep_elites],
+        t0=0.0, init_cost=first_init_cost, perturbations=perturbations,
+        trace=trace, elites=uniq[:cfg.keep_elites],
     )
 
 

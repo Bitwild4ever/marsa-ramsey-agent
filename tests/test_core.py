@@ -206,6 +206,33 @@ def test_violation_enumeration() -> None:
     ok(f"{checked} 组随机图：枚举计数 == 增量计数，且每个团都确实是单色完全子图")
 
 
+def test_perturbation_mechanism() -> None:
+    """卡住扰动：关闭时绝不触发，开启时必须触发，且同种子完全可复现。
+
+    扰动会清空禁忌表与候选缓存，属于容易写错的状态操作，因此单独验收。
+    """
+    print("\nI. 卡住扰动机制")
+    from marsa.search import TabuConfig, run_tabu
+    n, s, t = 30, 5, 5
+    common = dict(n=n, s=s, t=t, steps=1500, seed=3, report_every=0,
+                  keep_elites=0, candidate_mode="violation",
+                  candidate_size=128, target_cost=-1)
+    off = run_tabu(TabuConfig(**common, stall_limit=0))
+    assert off.perturbations == 0, "stall_limit=0 时不应发生扰动"
+    on = run_tabu(TabuConfig(**common, stall_limit=40, perturb_edges=2))
+    assert on.perturbations > 0, "stall_limit=40 时应发生扰动"
+    again = run_tabu(TabuConfig(**common, stall_limit=40, perturb_edges=2))
+    assert (again.best_cost == on.best_cost
+            and again.perturbations == on.perturbations), "同种子结果不可复现"
+    # 扰动型与纯局部型应当产生不同的轨迹（否则这个维度是多余的）
+    diff = (off.best_cost != on.best_cost
+            or off.steps_done != on.steps_done
+            or off.perturbations != on.perturbations)
+    assert diff, "开启扰动后行为完全没有变化，说明该机制未生效"
+    ok(f"扰动触发正确且可复现（关闭=0 次，开启={on.perturbations} 次，"
+       f"最优代价 {off.best_cost} vs {on.best_cost}）")
+
+
 def bench() -> None:
     print("\nF. 性能标定（这决定迭代曲线能画多密）")
     rng = random.Random(1)
@@ -237,6 +264,7 @@ if __name__ == "__main__":
     test_known_small_values()
     test_schedule_decoupled_from_steps()
     test_violation_enumeration()
+    test_perturbation_mechanism()
     bench()
     print("\n" + "=" * 68)
     print(f"全部通过：{passed} 项测试")

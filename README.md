@@ -166,8 +166,8 @@ n=43，(5,5)，12 episodes × 3000 步，2 seeds：
 ## 快速开始
 
 只需要 **Python 3 + numpy**（图表用 Pillow）。无 GPU、无网络依赖。
-全部 **21 项测试**通过：`tests/test_core.py`（7）+ `tests/test_memory.py`（6）+
-`tests/test_planner.py`（8）。
+全部 **27 项测试**通过：`tests/test_core.py`（8）+ `tests/test_memory.py`（6）+
+`tests/test_planner.py`（8）+ `tests/test_selector.py`（5）。
 
 ```bash
 # 正确性验收（7 项：与暴力枚举交叉验证、增量代价、团枚举、退火时间表回归等）
@@ -178,6 +178,9 @@ python tests/test_memory.py
 
 # 规划器与策略记忆测试（8 项：LLM 路径 + 降级 + UCB1 学习）
 python tests/test_planner.py
+
+# 组合选择器测试（5 项：UCB1 收敛、分桶独立、可复现）
+python tests/test_selector.py
 
 # 已知精确值阶梯：引擎验收门槛（应得 7/7）
 python scripts/ladder.py 20000 tabu_focus
@@ -202,6 +205,11 @@ python scripts/run_ablation.py --n 43 --episodes 12 --steps 3000 --seeds 2
 
 # 生成全部图表
 python scripts/make_charts.py
+
+# ---- 阶段 1：算子组合与"按情形选择"的判决实验 ----
+python scripts/run_portfolio.py --stage train      # 训练集网格（25 算子 × 6 单元）
+python scripts/run_portfolio.py --stage heldout    # held-out 网格（8 单元）
+python scripts/run_selector.py                     # 判决 + 5 种度量稳健性检查
 ```
 
 ---
