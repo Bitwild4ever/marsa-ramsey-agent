@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "backend": "native",
+  "rasterEngine": "pdfium",
+  "source": "saved",
+  "inputPath": "C:\\Users\\26319\\Documents\\xwechat_files\\wxid_2f0fkrilfnb622_5e5a\\msg\\file\\2026-10\\AI-Agents-in-Depth-zh-CN(2).pdf",
+  "sourceSha256": "0b939175a49ba2cf9909477f7ff2df1dd8136385993ab8bdcf492fdcf0db9bd0",
+  "dpi": 110,
+  "pageCount": 313,
+  "images": [
+    {
+      "index": 1,
+      "page": 65,
+      "path": "D:\\myagent\\tools\\ref-skills2\\page-0001.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 268056
+    },
+    {
+      "index": 2,
+      "page": 66,
+      "path": "D:\\myagent\\tools\\ref-skills2\\page-0002.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 399291
+    },
+    {
+      "index": 3,
+      "page": 67,
+      "path": "D:\\myagent\\tools\\ref-skills2\\page-0003.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 215956
+    },
+    {
+      "index": 4,
+      "page": 68,
+      "path": "D:\\myagent\\tools\\ref-skills2\\page-0004.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 174121
+    },
+    {
+      "index": 5,
+      "page": 69,
+      "path": "D:\\myagent\\tools\\ref-skills2\\page-0005.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 293674
+    }
+  ],
+  "missingFonts": []
+}
