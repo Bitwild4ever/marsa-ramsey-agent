@@ -141,12 +141,21 @@ def main() -> int:
         n_defs += 1
     print(f"[2/4] 已复制 {n_defs} 个工具定义 -> {defs_dst}")
 
-    # 3) 技能
-    skill_src = PACK / "skills" / "ramsey-construction-search" / "SKILL.md"
-    skill_dst = home / "skills" / "installed" / "ramsey-construction-search"
-    skill_dst.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(skill_src, skill_dst / "SKILL.md")
-    print(f"[3/4] 已复制技能 -> {skill_dst}")
+    # 3) 技能（ramsey-pack/skills/ 下的每个目录各是一份技能）
+    skills_src = PACK / "skills"
+    skills_dst = home / "skills" / "installed"
+    installed: list[str] = []
+    for skill_dir in sorted(p for p in skills_src.iterdir() if p.is_dir()):
+        skill_md = skill_dir / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        target = skills_dst / skill_dir.name
+        target.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(skill_md, target / "SKILL.md")
+        installed.append(skill_dir.name)
+    print(f"[3/4] 已复制 {len(installed)} 份技能 -> {skills_dst}")
+    for name in installed:
+        print(f"        - {name}")
 
     # 4) 注册补丁
     status = patch_registry(registry)
