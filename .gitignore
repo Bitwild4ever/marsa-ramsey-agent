@@ -32,3 +32,5 @@ moonshine-main/
 Moonshine-main/
 moonshine-home/
 *.py.orig
+# 提交信息临时文件
+tools/msg.txt
