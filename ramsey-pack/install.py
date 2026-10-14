@@ -129,7 +129,7 @@ def main() -> int:
     # 1) 工具实现
     shutil.copy2(PACK / "tools" / "ramsey_tools.py",
                  moon / "tools" / "ramsey_tools.py")
-    print(f"[1/4] 已复制 tools/ramsey_tools.py -> {moon / 'tools'}")
+    print(f"[1/5] 已复制 tools/ramsey_tools.py -> {moon / 'tools'}")
 
     # 2) 工具定义
     defs_src = PACK / "tools" / "definitions"
@@ -139,7 +139,7 @@ def main() -> int:
     for f in sorted(defs_src.glob("*.md")):
         shutil.copy2(f, defs_dst / f.name)
         n_defs += 1
-    print(f"[2/4] 已复制 {n_defs} 个工具定义 -> {defs_dst}")
+    print(f"[2/5] 已复制 {n_defs} 个工具定义 -> {defs_dst}")
 
     # 3) 技能（ramsey-pack/skills/ 下的每个目录各是一份技能）
     skills_src = PACK / "skills"
@@ -153,13 +153,30 @@ def main() -> int:
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(skill_md, target / "SKILL.md")
         installed.append(skill_dir.name)
-    print(f"[3/4] 已复制 {len(installed)} 份技能 -> {skills_dst}")
+    print(f"[3/5] 已复制 {len(installed)} 份技能 -> {skills_dst}")
     for name in installed:
         print(f"        - {name}")
 
-    # 4) 注册补丁
+    # 4) Agent 人格（ramsey-pack/agents/ 下的每个目录各是一个 agent 定义）
+    agents_src = PACK / "agents"
+    agents_dst = home / "agents" / "installed"
+    n_agents = 0
+    if agents_src.exists():
+        for agent_dir in sorted(p for p in agents_src.iterdir() if p.is_dir()):
+            agent_md = agent_dir / "AGENT.md"
+            if not agent_md.exists():
+                continue
+            target = agents_dst / agent_dir.name
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(agent_md, target / "AGENT.md")
+            n_agents += 1
+            print(f"[4/5] 已复制 agent 人格 -> {target}")
+    if n_agents == 0:
+        print("[4/5] 未发现 agent 人格，跳过")
+
+    # 5) 注册补丁
     status = patch_registry(registry)
-    print(f"[4/4] registry.py: {status}")
+    print(f"[5/5] registry.py: {status}")
 
     print("\n安装完成。自检：")
     print(f"  python -m moonshine --home {home} tools | findstr ramsey")
