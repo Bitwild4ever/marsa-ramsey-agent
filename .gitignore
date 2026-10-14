@@ -11,7 +11,7 @@ tools/preview*/
 *.tmp
 
 # 若需要保留全部实测日志，请勿忽略 runs/。
-# 本项目刻意把 runs/ 纳入版本控制：139 个 JSONL 迭代日志是"智能体确实跑过"的证据。
+# 本项目刻意把 runs/ 纳入版本控制：JSONL 迭代日志是"智能体确实跑过"的证据。
 # 如需减小仓库体积，可取消下面这行的注释：
 # runs/*.jsonl
 
@@ -21,6 +21,14 @@ tools/preview*/
 *.swp
 .DS_Store
 
-# ��ȾԤ��ͼ��QA �м���� + ������������Ⱦ������⣩
+# 渲染预览图（QA 中间产物 + 第三方资料渲染，不入库）
 tools/ref-*/
 tools/preview*/
+
+# ---- 第三方与生成物（不入库）----
+# Moonshine 是老师自己的开源项目，不在本仓库重新发布其源码；
+# 我们的二次开发成果全部放在 ramsey-pack/ 里，可用 install.py 重新装回去。
+moonshine-main/
+Moonshine-main/
+moonshine-home/
+*.py.orig
