@@ -1,0 +1,17 @@
+﻿{"n": 20, "free_parameters": 10, "space": 1024, "checked": 1024, "solutions": 64, "seconds": 0.002, "all_solutions_verified": true, "example_graph6": "SlthgsL@gE_L?L?E_@g?L_?v?@j?@l_?s"}
+{"n": 21, "free_parameters": 10, "space": 1024, "checked": 1024, "solutions": 48, "seconds": 0.005, "all_solutions_verified": true, "example_graph6": "TlUmjStEgY_t?t?Y_Ek?toBT_El_EioBUk?t"}
+{"n": 22, "free_parameters": 11, "space": 2048, "checked": 2048, "solutions": 65, "seconds": 0.007, "all_solutions_verified": true, "example_graph6": "UltlislDgU_l?l?U_Dg?l_At?Dl?Dm_Atg?ll?Dg"}
+{"n": 23, "free_parameters": 11, "space": 2048, "checked": 2048, "solutions": 99, "seconds": 0.009, "all_solutions_verified": true, "example_graph6": "VUYurWuEoZ?u?u?Z?Eo?u?BY?Eu?Er?BYo?uu?ErW?Z?"}
+{"n": 24, "free_parameters": 12, "space": 4096, "checked": 4096, "solutions": 38, "seconds": 0.012, "all_solutions_verified": true, "example_graph6": "WUxpsxMHof@M@M?f?Ho@M?Cy?Hq?Hp?CyO@Mq?HvG?fMO@M"}
+{"n": 25, "free_parameters": 12, "space": 4096, "checked": 4096, "solutions": 30, "seconds": 0.016, "all_solutions_verified": true, "example_graph6": "XUxpszMXpfBMBM@f?XoBM?Ky?Xu?Xr?KwoBMe?XuW@f[oBM[oBM"}
+{"n": 26, "free_parameters": 13, "space": 8192, "checked": 8192, "solutions": 12, "seconds": 0.03, "all_solutions_verified": true, "example_graph6": "YUYurWuEsZGuGuCZ@EoGu_bX@Ep@Eo_bYGGup@ErCCZUGGuuGGuZCCZ?"}
+{"n": 27, "free_parameters": 13, "space": 8192, "checked": 8192, "solutions": 27, "seconds": 0.038, "all_solutions_verified": true, "example_graph6": "ZzlXWmJpZDeJEJBD_pWEJ?Wk?p[?p]?Wl_EJK?pWoBDp_EJP_EJgoBDyK?pW"}
+{"n": 28, "free_parameters": 14, "space": 16384, "checked": 16384, "solutions": 21, "seconds": 0.066, "all_solutions_verified": true, "example_graph6": "[zlXWmJpZDeJEJBD_pWEJ?Wk?pW?p[?Wn?EJW?pX_BDb?EJb?EJP_BDsW?p]b?EJ"}
+{"n": 29, "free_parameters": 14, "space": 16384, "checked": 16384, "solutions": 21, "seconds": 0.078, "all_solutions_verified": true, "example_graph6": "\\QjRPiYrVLMYMYFL@rOMY?xg@rO@rS?xj?MYw@rR_FLF?MYf?MYr_FLKw@rTf?MYU[?xg"}
+{"n": 30, "free_parameters": 15, "space": 32768, "checked": 32768, "solutions": 12, "seconds": 0.13, "all_solutions_verified": true, "example_graph6": "]QjRPiYrVLMYMYFL@rOMY?xg@rO@rO?xi?MYo@rV?FLM?MYM?MYf?FLXo@rRM?MYkw?xhXo@rO"}
+{"n": 31, "free_parameters": 15, "space": 32768, "checked": 32768, "solutions": 15, "seconds": 0.162, "all_solutions_verified": true, "example_graph6": "^CQa`OSaeI[S[SmIJa`[SDpOJacJaaDpQ`[SsJafOmIM`[SM`[SFOmIPsJaaM`[SgyDpPPsJa`PsJa_"}
+{"n": 32, "free_parameters": 16, "space": 65536, "checked": 65536, "solutions": 0, "seconds": 0.248, "all_solutions_verified": null, "example_graph6": null}
+{"n": 33, "free_parameters": 16, "space": 65536, "checked": 65536, "solutions": 10, "seconds": 0.386, "all_solutions_verified": true, "example_graph6": "`UxpoyMPpFQMQMhFIPpQMDGwIPoIPoDGy@QMOIPt?hFI@QMI@QMd?hFHOIPpI@QMCgDGyHOIPuHOIPvCgDGxpI@QM"}
+{"n": 34, "free_parameters": 17, "space": 131072, "checked": 131072, "solutions": 0, "seconds": 0.512, "all_solutions_verified": null, "example_graph6": null}
+{"n": 35, "free_parameters": 17, "space": 131072, "checked": 131072, "solutions": 0, "seconds": 0.643, "all_solutions_verified": null, "example_graph6": null}
+WROTE
