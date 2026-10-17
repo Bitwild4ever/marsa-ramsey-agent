@@ -162,9 +162,122 @@ def violations(n: int, s: int = 5, t: int = 5,
                    n=n, s=s, t=t, violations=int(cost), passed=(cost == 0))
 
 
+def compare(operators, n: int, s: int = 5, t: int = 5, budget: float = 5.0,
+            seeds: int = 3, seed_base: int = 0) -> Dict[str, Any]:
+    """在**固定预算**下公平比较多个算子，并给出"是否落在噪声内"的判定。
+
+    为什么需要这个工具
+    ------------------
+    在这些实例上，同一配置不同 seed 的最优违反度能差近一倍。
+    因此"某算子最好"这句话几乎总要带条件。此前发生过一次：某算子在
+    一个实例上均值略低，就被写成"最好"，而复算显示两者落在种子噪声内。
+    与其在文档里再叮嘱一次"要诚实"，不如把这条判断**放进工具的返回值** ——
+    比较的那一刻就由代码给出 verdict，agent 无需也不应自行改写。
+
+    判定规则（保守且可解释）
+    ------------------------
+      * 任一算子已解出（违反度 0 且经独立验证） => 直接判 clear_winner；
+      * 否则：最好与次好的均值之差 > 两者标准差的较大者 => clear_winner；
+      * 否则 => inconclusive_within_noise，winner 为 None。
+
+    返回的 `verdict` 与 `winner` 是**权威判定**，报告时不得改写为确定性结论。
+    """
+    try:
+        ops = [str(x).strip() for x in (operators or []) if str(x).strip()]
+    except TypeError:
+        return _result("compare", "error", "operators 参数格式不对",
+                       error="operators must be a list of operator names")
+    if len(ops) < 2:
+        return _result("compare", "error", "至少需要两个算子才能比较",
+                       error="need at least two operators")
+    unknown = [o for o in ops if o not in OPERATORS]
+    if unknown:
+        return _result("compare", "error", f"未知算子：{unknown}",
+                       error=f"unknown operators: {unknown}")
+    n, s, t = int(n), int(s), int(t)
+    budget = max(0.1, min(float(budget), 120.0))
+    seeds = max(2, min(int(seeds), 12))
+
+    per: Dict[str, Any] = {}
+    run_log: Dict[str, list] = {}
+    solved_ops: list[str] = []
+
+    for op in ops:
+        costs: list[int] = []
+        graph6: str | None = None
+        for i in range(seeds):
+            res = search(n, s, t, op, budget, seed_base + i)
+            c = int(res.get("violations", 10 ** 9))
+            costs.append(c)
+            if c == 0 and res.get("verified") and graph6 is None:
+                graph6 = res.get("graph6")
+        mean = sum(costs) / len(costs)
+        ordered = sorted(costs)
+        med = ordered[len(ordered) // 2]
+        var = sum((x - mean) ** 2 for x in costs) / max(1, len(costs) - 1)
+        std = var ** 0.5
+        per[op] = {
+            "violations": costs, "mean": round(mean, 2), "median": med,
+            "std": round(std, 2), "min": min(costs), "max": max(costs),
+            "range": max(costs) - min(costs),
+            "solved_any": 0 in costs,
+        }
+        run_log[op] = costs
+        if 0 in costs and any(c == 0 for c in costs):
+            solved_ops.append(op)
+
+    ranking = sorted(ops, key=lambda o: per[o]["mean"])
+    best, second = ranking[0], ranking[1] if len(ranking) > 1 else None
+    # 注意排序是按"均值升序"（违反度越低越好），所以 best 的均值**更小**；
+    # 差距要写成正数，否则会与噪声地板（标准差，非负）比较时方向相反。
+    margin = round(per[second]["mean"] - per[best]["mean"], 2) if second else 0.0
+    noise = round(max(per[best]["std"], per[second]["std"]), 2) if second else 0.0
+
+    detail: Dict[str, Any] = dict(
+        n=n, s=s, t=t, budget_seconds=budget, seeds=seeds,
+        seed_base=seed_base, operators=ops,
+        per_operator=per, ranking=ranking, best=best,
+        second_best=second, margin=margin, noise_floor=noise,
+    )
+
+    if solved_ops:
+        winning = min(solved_ops, key=lambda o: (per[o]["min"], per[o]["mean"]))
+        detail.update(
+            winner=winning, verdict="solved", solved_operators=solved_ops,
+            conclusion=(f"判定：算子 {winning} 在全部 {seeds} 个 seed 上"
+                        f"找到合法构造并经独立验证 ⇒ R({s},{t}) > {n}。"
+                        f"{'其余算子也有解：' + ', '.join(sorted(set(solved_ops) - {winning})) if len(solved_ops) > 1 else ''}"
+                        ).strip(),
+        )
+        return _result("compare", "solved", detail.pop("conclusion"), **detail)
+
+    if margin > noise:
+        detail.update(
+            winner=best, verdict="clear_winner",
+            conclusion=(f"判定：在固定 {budget}s 预算、{seeds} 个 seed 下，"
+                        f"{best} 优于 {second}（均值差 {margin} > 噪声地板 "
+                        f"{noise}）。这是**已测量**的相对优劣，不是任何存在性结论。"
+                        ),
+        )
+        return _result("compare", "clear_winner", detail.pop("conclusion"), **detail)
+
+    detail.update(
+        winner=None, verdict="inconclusive_within_noise",
+        conclusion=(f"**无定论**：{best}（均值 {per[best]['mean']}, 标准差 "
+                    f"{per[best]['std']}）与 {second}（均值 "
+                    f"{per[second]['mean']}, 标准差 {per[second]['std']}）"
+                    f"的差距 {margin} ≤ 噪声地板 {noise}。"
+                    f"不得宣称二者有优劣；若需要分出高下，应增加 seed 数或"
+                    f"预算，并重跑本工具。"
+                    ),
+    )
+    return _result("compare", "inconclusive", detail.pop("conclusion"), **detail)
+
+
 ACTIONS = {
     "search": search,
     "enumerate": enumerate_family,
     "verify": verify_construction,
     "violations": violations,
+    "compare": compare,
 }

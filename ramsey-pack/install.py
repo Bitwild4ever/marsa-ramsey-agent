@@ -32,6 +32,7 @@ IMPORT_BLOCK = '''
 # 它审的是"证明过程"，无法判定"某个具体图不含 K5"这类**计算性断言**。
 try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
     from moonshine.tools.ramsey_tools import (
+        ramsey_compare,
         ramsey_enumerate_family,
         ramsey_search,
         ramsey_verify_construction,
@@ -42,6 +43,7 @@ try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
 except Exception as _exc:  # noqa: BLE001
     ramsey_enumerate_family = ramsey_search = None
     ramsey_verify_construction = ramsey_violations = None
+    ramsey_compare = None
     _RAMSEY_TOOLS_AVAILABLE = False
     _RAMSEY_IMPORT_ERROR = str(_exc)
 
@@ -85,6 +87,11 @@ HANDLER_BLOCK = '''            # --- 本项目新增的确定性工具 ---
                 (lambda runtime, **kwargs: ramsey_enumerate_family(runtime, **kwargs))
                 if _RAMSEY_TOOLS_AVAILABLE
                 else _ramsey_unavailable("ramsey_enumerate_family")
+            ),
+            "ramsey_compare": (
+                (lambda runtime, **kwargs: ramsey_compare(runtime, **kwargs))
+                if _RAMSEY_TOOLS_AVAILABLE
+                else _ramsey_unavailable("ramsey_compare")
             ),
 '''
 

@@ -96,8 +96,17 @@ C:\Users\26319\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.
 3. **先考虑能不能判死**。数自由参数：循环图族只有 `floor(n/2)` 位
    （`n=43` 时 21 位，约 210 万，秒级可查完）。能穷举就穷举。
 4. **否则搜索**：固定墙钟预算、多种子看**均值**（单种子在同配置下能差近一倍）。
+   **比较算子优劣时用 `ramsey_compare` 工具**，它会跑完所有种子并给出
+   `verdict`（`solved` / `clear_winner` / `inconclusive_within_noise`）与
+   `conclusion`。**照抄它的判定，不要改写。** 若 `winner` 为 null，就没有胜者。
 5. **验证任何像结果的东西**：把 `graph6` 交给 `verify`。只有它说 `verified` 才算成立。
 6. **如实记录**：包括被排除的族（写明族名、参数个数、实际查完的空间大小）。
+
+> **本项目发生过一次真实的过度概括**：在 `n=44` 上 `tabu_focus` 与 `tabu_violation`
+> 的均值差约 6，被写成"`tabu_focus` 最好"；两个 seed 的独立复算显示两者
+> 落在种子噪声内。`ramsey_compare` 就是为此而生 —— 让这条判断在测量的那一刻
+> 由代码给出，事后无法被合理化掉。
+
 
 ## 报告纪律（这条最重要）
 

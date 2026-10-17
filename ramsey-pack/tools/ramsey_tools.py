@@ -281,3 +281,27 @@ def ramsey_enumerate_family(
         f"route to R({s},{t}) > {n}."
     )
     return _result("ramsey_enumerate_family", False, "none_exist", **detail)
+
+
+# --------------------------------------------------------------------------
+# 5. 算子比较（统计纪律自检）
+# --------------------------------------------------------------------------
+
+def ramsey_compare(
+    runtime: dict,
+    operators: List[str],
+    n: int,
+    s: int = 5,
+    t: int = 5,
+    budget: float = 5.0,
+    seeds: int = 3,
+    seed_base: int = 0,
+) -> Dict[str, object]:
+    """在固定预算下公平比较多个算子，返回"是否落在噪声内"的权威判定。
+
+    `verdict` 与 `winner` 是代码判定，报告时不得改写。
+    返回结构与 marsa.ops.compare 一致，只是包了 Moonshine 的运行时签名。
+    """
+    from marsa.ops import compare as _compare
+    return _compare(operators, n=n, s=s, t=t, budget=budget,
+                    seeds=seeds, seed_base=seed_base)

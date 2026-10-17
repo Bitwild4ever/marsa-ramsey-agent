@@ -36,19 +36,30 @@ Measuring a method fairly is harder than inventing one, and most false claims in
 - **Re-storing past solutions and warm-starting from them made things worse**, in both a short and a long budget regime, and the mechanism was identified: the stored near-solutions were worse than what a fresh random restart reaches, so warm-starting anchored the search in a mediocre basin. Do not re-attempt solution-level memory without new evidence.
 
 ## Tool Calls
-- `ramsey_search`: run one configuration at a fixed budget and seed.
+- **`ramsey_compare`**: the **primary** tool for this skill. Give it the operators,
+  a fixed `budget`, and a `seeds` count; it runs them all and returns an
+  authoritative `verdict` (`solved` / `clear_winner` / `inconclusive_within_noise`)
+  plus a pre-written `conclusion`. **Report that verdict verbatim.** It exists
+  precisely because these comparisons are usually over-claimed.
+- `ramsey_search`: a single run — useful for exploration, **never** sufficient for a comparison.
 - `ramsey_violations`: cheap exact reading of a candidate's quality.
 - `ramsey_verify_construction`: confirm any apparent success before counting it.
 - `record_solve_attempt` / `record_failed_path`: persist the comparison or the refutation.
-- `run_python_script`: run a controlled sweep when many configurations must be compared.
 - `query_memory`: check whether a configuration was already tried and rejected.
 
 ## Output Contract
 - Report the protocol before the result: budget, number and values of seeds, selection set, held-out set.
+- **Report `ramsey_compare`'s `verdict` and `conclusion` verbatim.** Do not soften
+  `inconclusive_within_noise` into "slightly better" or "roughly equal".
+  If `winner` is null, there is no winner.
 - Report mean **and** spread. A bare best-of-N number is not a result.
-- State explicitly when a comparison is inconclusive because the difference is within seed noise.
 - Never report a selection-layer gain without first showing that no single configuration dominates.
 
 ## Notes
 - A fairness rule from this project worth keeping: an automated gate should decide whether a candidate method is even allowed to compete. Requiring every candidate to pass the existing test suite before it is measured kept broken variants out of the comparison.
 - When two configurations tie on the primary metric, prefer the one with the smaller spread; it is more likely to reproduce.
+- **A real failure this tool was built to prevent**: on `n=44`, `tabu_focus` and
+  `tabu_violation` differed by about 6 violations across seeds. That was reported as
+  "tabu_focus is best" until an independent recheck with two seeds showed the two
+  statistically tied. `ramsey_compare` now makes that call in code at the moment of
+  measurement, so it cannot be rationalised away afterward.
