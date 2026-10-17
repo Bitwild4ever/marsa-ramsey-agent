@@ -34,3 +34,10 @@ moonshine-home/
 *.py.orig
 # 提交信息临时文件
 tools/msg.txt
+
+# ---- 凭据（绝不入库）----
+credentials.json
+*credentials*.json
+.env
+.env.*
+secrets/
