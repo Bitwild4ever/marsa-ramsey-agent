@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "note": [
+    "Held-out 能力基准：每题答案都来自本项目自己的完整穷举，不是猜的。",
+    "为什么必须有它：没有基准，'agent 变聪明了' 就是自我感觉良好。",
+    "评分规则：判定正确率 + 覆盖的工具种类数 + 总耗时。",
+    "optional=true 的题在对应工具未注册时跳过，并单独统计 ——",
+    "这样 agent 每注册一个新工具，基准分会真的上升。"
+  ],
+  "tasks": [
+    {
+      "id": "circ_55_n30",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 30,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "exists",
+        "solutions_found": 200
+      },
+      "note": "循环族 (5,5) n=30：本项目完整枚举得 200 个合法染色"
+    },
+    {
+      "id": "circ_55_n36",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 36,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "exists",
+        "solutions_found": 102
+      }
+    },
+    {
+      "id": "circ_55_n38",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 38,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "exists",
+        "solutions_found": 18
+      }
+    },
+    {
+      "id": "circ_55_n39",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 39,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "none_exist",
+        "solutions_found": 0
+      },
+      "note": "判定性否定：循环族在 n=39 无解"
+    },
+    {
+      "id": "circ_55_n40",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 40,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "exists",
+        "solutions_found": 24
+      }
+    },
+    {
+      "id": "circ_55_n42",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 42,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "none_exist",
+        "solutions_found": 0
+      }
+    },
+    {
+      "id": "circ_55_n43",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 43,
+        "s": 5,
+        "t": 5,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "none_exist",
+        "solutions_found": 0
+      },
+      "note": "著名的 43 顶点构造不是循环图 —— 这条是重要事实"
+    },
+    {
+      "id": "circ_46_n33",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 33,
+        "s": 4,
+        "t": 6,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "exists",
+        "solutions_found": 10
+      }
+    },
+    {
+      "id": "circ_46_n34",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 34,
+        "s": 4,
+        "t": 6,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "none_exist",
+        "solutions_found": 0
+      }
+    },
+    {
+      "id": "circ_46_n36",
+      "kind": "family",
+      "tool": "ramsey_enumerate_family",
+      "args": {
+        "n": 36,
+        "s": 4,
+        "t": 6,
+        "family": "circulant"
+      },
+      "expect": {
+        "overall_verdict": "none_exist",
+        "solutions_found": 0
+      },
+      "note": "循环族无法把 R(4,6) 下界推到 36"
+    },
+    {
+      "id": "cayley_z33_46",
+      "kind": "dynamic",
+      "tool": "cayley_enumerate",
+      "args": {
+        "n": 33,
+        "factors": [
+          33
+        ],
+        "s": 4,
+        "t": 6,
+        "stop_at_first": false
+      },
+      "expect": {
+        "solutions_found": 10
+      },
+      "optional": true,
+      "note": "需要 cayley_enumerate 已注册（agent 自建并注册的工具）"
+    },
+    {
+      "id": "cayley_z34_46",
+      "kind": "dynamic",
+      "tool": "cayley_enumerate",
+      "args": {
+        "n": 34,
+        "factors": [
+          34
+        ],
+        "s": 4,
+        "t": 6,
+        "stop_at_first": true
+      },
+      "expect": {
+        "solutions_found": 0
+      },
+      "optional": true
+    },
+    {
+      "id": "cayley_z30_55",
+      "kind": "dynamic",
+      "tool": "cayley_enumerate",
+      "args": {
+        "n": 30,
+        "factors": [
+          30
+        ],
+        "s": 5,
+        "t": 5,
+        "stop_at_first": true
+      },
+      "expect": {
+        "has_solution": true
+      },
+      "optional": true,
+      "note": "检查它算的是布尔真值而不是具体计数"
+    }
+  ]
+}

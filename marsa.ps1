@@ -38,6 +38,10 @@ $MHome = "D:\myagent\moonshine-home"
 $Agent = "computational-construction-search"
 $Py    = "C:\Users\26319\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\python.exe"
 
+# 不依赖 pip editable 安装：DSH 的 Python 环境被重置过多次，site-packages 会丢。
+# 这里用 PYTHONPATH + 目录联接（_shims\moonshine）保证 import 永远可用。
+$env:PYTHONPATH = "$Root;$Root\_shims"
+
 if (-not (Test-Path $Py)) {
     $found = Get-Command python -ErrorAction SilentlyContinue
     if ($found) { $Py = $found.Source }
@@ -104,18 +108,29 @@ function Invoke-Doctor {
 function Invoke-Install {
     Write-Head "重建环境（幂等，可重复执行）"
 
-    Write-Info "[1/3] 安装 moonshine（editable，不装重依赖）"
+    Write-Info "[1/4] 建立 moonshine 的目录联接（不依赖 pip）"
+    $link = "$Root\_shims\moonshine"
+    $target = "$Root\Moonshine-main\Moonshine-main"
+    New-Item -ItemType Directory -Force -Path "$Root\_shims" | Out-Null
+    if (-not (Test-Path $link)) {
+        cmd /c mklink /J "$link" "$target" 2>&1 | Out-Null
+    }
+    if (Test-Path $link) { Write-Ok "联接就绪: $link" }
+    else { Write-Bad "联接创建失败" }
+
+    Write-Info "[2/4] 顺手也做一次 pip editable（有则更好，没有也能跑）"
     Push-Location "$Root\Moonshine-main\Moonshine-main"
     & $Py -m pip install -e . --no-deps --quiet 2>&1 | Out-Null
     Pop-Location
-
-    Write-Info "[2/3] 安装 marsa（editable）"
     Push-Location $Root
     & $Py -m pip install -e . --no-deps --quiet 2>&1 | Out-Null
     Pop-Location
 
-    Write-Info "[3/3] 把工具/技能/人格装进 Moonshine 运行时"
+    Write-Info "[3/4] 把工具/技能/人格装进 Moonshine 运行时"
     & $Py "$Root\ramsey-pack\install.py" --moonshine "$Root\Moonshine-main\Moonshine-main" --home $MHome
+
+    Write-Info "[4/4] 同步 agent 自己注册过的工具"
+    & $Py -c "import sys; sys.path.insert(0, r'$Root'); from growth import grow; print(' ', grow.sync_to_moonshine())" 2>&1
 
     Write-Host ""
     Write-Ok "完成。执行 .\marsa.ps1 doctor 复核。"
@@ -190,6 +205,28 @@ function Invoke-Analyze {
 }
 
 
+function Invoke-Benchmark {
+    Write-Head "能力基准 (Tier 1)"
+    Push-Location $Root
+    try {
+        & $Py -u "$Root\growth\benchmark\run_benchmark.py" --verbose
+    } finally {
+        Pop-Location
+    }
+}
+
+
+function Invoke-Tools {
+    Write-Head "agent 自建的工具（能力存量）"
+    Push-Location $Root
+    try {
+        & $Py -u "$Root\growth\list_tools.py"
+    } finally {
+        Pop-Location
+    }
+}
+
+
 function Show-Help {
     $lines = @(
         "",
@@ -201,6 +238,8 @@ function Show-Help {
         "  .\marsa.ps1 run `"<任务>`"       让它自主研究（默认 10 轮）",
         "  .\marsa.ps1 ask `"<问题>`"       单轮问答",
         "  .\marsa.ps1 analyze           分析最近一次运行的稳定性",
+        "  .\marsa.ps1 benchmark         跑能力基准，往曲线写一个点",
+        "  .\marsa.ps1 tools             列出 agent 自建的工具",
         "",
         "可选参数",
         "  -Iterations <n>   自主运行轮数（默认 10）",
@@ -216,10 +255,12 @@ function Show-Help {
 
 
 switch ($Command.ToLower()) {
-    "doctor"  { Invoke-Doctor | Out-Null }
-    "install" { Invoke-Install }
-    "run"     { Invoke-Run }
-    "ask"     { Invoke-Ask }
-    "analyze" { Invoke-Analyze }
-    default   { Show-Help }
+    "doctor"    { Invoke-Doctor | Out-Null }
+    "install"   { Invoke-Install }
+    "run"       { Invoke-Run }
+    "ask"       { Invoke-Ask }
+    "analyze"   { Invoke-Analyze }
+    "benchmark" { Invoke-Benchmark }
+    "tools"     { Invoke-Tools }
+    default     { Show-Help }
 }

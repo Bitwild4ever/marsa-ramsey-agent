@@ -1,0 +1,8 @@
+{
+  "name": "cayley_enumerate",
+  "entry": "enumerate_group",
+  "description": "Exhaustively enumerate inverse-closed connection sets of an abelian Cayley group Z_a1 x Z_a2 ... and decide whether a valid (s,t)-colouring exists. This generalizes circulant enumeration (which only covers Z_n) to non-cyclic abelian groups.",
+  "project": "ramsey_agent_run",
+  "registered_at": "2026-11-02T15:21:38",
+  "validation": "passed"
+}

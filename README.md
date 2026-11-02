@@ -155,7 +155,7 @@ ramsey-pack/                二次开发交付物（可安装进任意 Moonshine
 ├── direct_checker.py       第二条独立判定实现（不假设平移对称）
 ├── tools/                  5 个工具定义 + 实现
 ├── skills/                 4 份技能
-└── agents/                 1 个 agent 人格
+└── agents/                 1个 agent 人格
 
 agent-runs/                 真实运行的可追溯证据
 ├── ramsey_agent_run/       首轮：86 次工具调用 + agent 自建的枚举器

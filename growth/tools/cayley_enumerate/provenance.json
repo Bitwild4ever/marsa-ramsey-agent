@@ -1,0 +1,8 @@
+{
+  "name": "cayley_enumerate",
+  "source_file": "D:\\myagent\\moonshine-home\\projects\\ramsey_agent_run\\workspace\\cayley_exhaust.py",
+  "test_file": "D:\\myagent\\moonshine-home\\projects\\ramsey_agent_run\\workspace\\test_cayley_exhaust.py",
+  "project": "ramsey_agent_run",
+  "registered_at": "2026-11-02T15:21:38",
+  "test_output_tail": "  [PASS] Z_30 (5,5) 有解（与引擎判定一致）\n  [PASS] Z_33 (4,6) 恰好 10 解（与 R(4,6) 穷举结果一致）\n  [PASS] Z_34 (4,6) 无解（反向自检：判定函数不是恒真）\n  [PASS] Z_28 (5,5) 计数 = 330，与引擎逐位穷举完全一致\n  [PASS] abelian_groups(44) 给出 2 种群结构，其中恰一个循环群 (11, 4)\n\n全部通过：5 项锚点校验\n耗时 16.1s，检查约 131,421 个候选\n实测速度 ≈ 8,186 masks/s\n注意：引擎是约 200 万 masks/s，本枚举器慢约两个数量级；大空间必须分片。\n结论：该枚举器在循环族上与独立实现的引擎一致，可用于非循环群。\n"
+}

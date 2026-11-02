@@ -34,6 +34,7 @@ try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
     from moonshine.tools.ramsey_tools import (
         ramsey_compare,
         ramsey_enumerate_family,
+        ramsey_grow,
         ramsey_search,
         ramsey_verify_construction,
         ramsey_violations,
@@ -43,7 +44,7 @@ try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
 except Exception as _exc:  # noqa: BLE001
     ramsey_enumerate_family = ramsey_search = None
     ramsey_verify_construction = ramsey_violations = None
-    ramsey_compare = None
+    ramsey_compare = ramsey_grow = None
     _RAMSEY_TOOLS_AVAILABLE = False
     _RAMSEY_IMPORT_ERROR = str(_exc)
 
@@ -64,6 +65,20 @@ def _ramsey_unavailable(tool_name: str):
             ),
         }
     return _handler
+
+
+def _ramsey_dynamic_handlers():
+    """加载 agent 自己注册的工具（growth/tools/）。
+
+    S1 工具自扩展的实现点：agent 在运行中用 ramsey_grow 注册的工具，
+    会在**下一次运行**时通过这里变成与内置工具同等的原生工具。
+    失败一律降级为空字典，不影响框架启动。
+    """
+    try:
+        from marsa.dynamic_tools import load_handlers
+        return dict(load_handlers())
+    except Exception:  # noqa: BLE001
+        return {}
 '''
 
 HANDLER_ANCHOR = '            "load_mcp_server_definition": lambda runtime, **kwargs: load_mcp_server_definition(runtime, **kwargs),\n'
@@ -93,6 +108,13 @@ HANDLER_BLOCK = '''            # --- 本项目新增的确定性工具 ---
                 if _RAMSEY_TOOLS_AVAILABLE
                 else _ramsey_unavailable("ramsey_compare")
             ),
+            "ramsey_grow": (
+                (lambda runtime, **kwargs: ramsey_grow(runtime, **kwargs))
+                if _RAMSEY_TOOLS_AVAILABLE
+                else _ramsey_unavailable("ramsey_grow")
+            ),
+            # agent 自己注册的工具（S1 工具自扩展）
+            **_ramsey_dynamic_handlers(),
 '''
 
 MARKER = "_RAMSEY_TOOLS_AVAILABLE = True"
@@ -120,6 +142,24 @@ def patch_registry(registry_path: Path) -> str:
     return "已打补丁（原文件备份为 registry.py.orig）"
 
 
+def _ensure_grow_reexport(tools_module: Path) -> None:
+    """让 ramsey_tools 重新导出 ramsey_grow，供 registry.py 统一 import。"""
+    marker = "# --- re-export: ramsey_grow ---"
+    text = tools_module.read_text(encoding="utf-8")
+    if marker in text:
+        return
+    text += (
+        "\n\n" + marker + "\n"
+        "# 让 `from moonshine.tools.ramsey_tools import ramsey_grow` 可用，\n"
+        "# 这样 registry.py 的补丁只需要 import 一个模块。\n"
+        "try:  # noqa: F401\n"
+        "    from .ramsey_grow import ramsey_grow\n"
+        "except ImportError:  # 退化路径：非包上下文\n"
+        "    from ramsey_grow import ramsey_grow  # noqa: F401\n"
+    )
+    tools_module.write_text(text, encoding="utf-8")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--moonshine", required=True,
@@ -136,7 +176,11 @@ def main() -> int:
     # 1) 工具实现
     shutil.copy2(PACK / "tools" / "ramsey_tools.py",
                  moon / "tools" / "ramsey_tools.py")
-    print(f"[1/5] 已复制 tools/ramsey_tools.py -> {moon / 'tools'}")
+    shutil.copy2(PACK / "tools" / "ramsey_grow.py",
+                 moon / "tools" / "ramsey_grow.py")
+    # ramsey_tools 需要能从同包导入 grow
+    _ensure_grow_reexport(moon / "tools" / "ramsey_tools.py")
+    print(f"[1/5] 已复制 ramsey_tools.py + ramsey_grow.py -> {moon / 'tools'}")
 
     # 2) 工具定义
     defs_src = PACK / "tools" / "definitions"

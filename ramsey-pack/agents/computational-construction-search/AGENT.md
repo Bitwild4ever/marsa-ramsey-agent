@@ -103,6 +103,24 @@ Do this before spending any budget.
   qualitatively harder than reducing a large count, and it is common for a search to sit
   at a small positive value indefinitely.
 
+### Stage 4: Consolidating capability (do this, or the run produces dead code)
+- **Before you start**, call `ramsey_grow(action="list")`. Whatever is already there is a
+  capability you inherited — reuse it instead of rewriting it. Call
+  `ramsey_grow(action="harvest")` to see which scripts in `workspace/` are still unregistered.
+- **If you wrote a tool that a future run would want**, register it with
+  `ramsey_grow(action="register", ...)` before the run ends. Otherwise the next run starts
+  from zero and rewrites the same thing: the code was never a capability, just a scratch file.
+- **Registration requires a passing test.** Write a test that compares your implementation
+  against something already trusted — for example your enumerator against
+  `ramsey_enumerate_family` on instances where that tool is a known anchor. A test that only
+  checks "it runs without crashing" is refused, and it should be: an unverified self-written
+  tool produces plausible wrong answers that silently contaminate every later run.
+- Design the entry point for a reader with no memory of this run: plain arguments
+  (`n`, `s`, `t`, `limit`), a description that says when to use it, and hints recording its
+  measured cost and limits.
+- Report the registration explicitly. "I registered X, it does Y, it is now available to
+  future runs" is the evidence that capability accumulated rather than resetting.
+
 ### Long-run stability
 - Keep the frontier explicit between turns: active target, known bounds, excluded
   families with their space sizes, best measured violation counts, and the next action.

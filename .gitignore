@@ -41,3 +41,5 @@ credentials.json
 .env
 .env.*
 secrets/
+# 目录联接（指向老师的 Moonshine 源码，绝不重新发布）
+_shims/
