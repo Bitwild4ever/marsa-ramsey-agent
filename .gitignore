@@ -43,3 +43,12 @@ credentials.json
 secrets/
 # 目录联接（指向老师的 Moonshine 源码，绝不重新发布）
 _shims/
+
+# LaTeX 中间产物（只保留 .tex 与最终 .pdf）
+*.aux
+*.out
+*.vrb
+*.log
+*.nav
+*.snm
+*.toc

@@ -1,0 +1,506 @@
+%% =====================================================================
+%%  自生长研究智能体 —— 课堂演示
+%%  编译方式：Overleaf 中请将 Compiler 设为 XeLaTeX
+%%  （ctex 宏包在 XeLaTeX 下对中文支持最完整）
+%% =====================================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{xcolor}
+
+\usetheme{Boadilla}
+\usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+%% 自定义强调色
+\definecolor{accent}{RGB}{20,90,160}
+\definecolor{soft}{RGB}{240,244,249}
+\definecolor{warn}{RGB}{170,60,40}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{block title}{bg=accent!12,fg=accent}
+\setbeamercolor{block body}{bg=soft}
+
+%% 紧凑列表
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+\setlength{\parskip}{2pt}
+
+\renewcommand{\emph}[1]{\textbf{#1}}   % 中文字型无斜体，按排印惯例改着重
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\key}[1]{\textbf{\color{accent}#1}}
+
+\title[自生长研究智能体]{面向构造性组合下界的自生长研究智能体}
+\subtitle{以 Ramsey 数 $R(5,5)$ 为检验场景}
+\author[曹成博]{曹成博 \quad 学号 2452035}
+\institute{人工智能选修课\\课程项目报告}
+\date{\today}
+
+\begin{document}
+
+%% ---------------------------------------------------------------- 封面
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%% ---------------------------------------------------------------- 核心指标
+\begin{frame}{核心指标}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}
+      \begin{block}{86}
+        \centering
+        单次自主研究运行中的\\工具调用次数
+      \end{block}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{block}{76.9\%\,$\rightarrow$\,100\%}
+        \centering
+        留出基准通过率\\（自建工具引入前后）
+      \end{block}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{block}{46}
+        \centering
+        覆盖全部模块的\\自动化测试用例数
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.6em}
+  \begin{block}{本报告的主结论}
+    所构建的智能体具备\textbf{能力自扩展}机制：其在运行中产生的代码经验，
+    经独立校验后可固化为后续运行可直接调用的原生工具；
+    该能力增长以留出基准上的通过率曲线度量，而非以单一最优值表征。
+
+    \vspace{0.3em}
+    \small\color{black!65}
+    数学问题在本项目中承担检验场景的角色，其本身不是研究目的。
+  \end{block}
+\end{frame}
+
+%% ---------------------------------------------------------------- 问题定位
+\begin{frame}{问题定位：智能体与求解器的区别}
+  \begin{center}
+  \small
+  \begin{tabular}{@{}p{0.24\textwidth}p{0.30\textwidth}p{0.32\textwidth}@{}}
+    \toprule
+    \textbf{维度} & \textbf{一次性求解器} & \textbf{本项目的智能体} \\
+    \midrule
+    优化对象 & 解空间中的点 & 智能体自身的能力集 \\
+    运行间状态 & 每次从零开始 & 继承既有工具与测量经验 \\
+    能力表征 & 单一最优目标值 & 随运行次数变化的曲线 \\
+    失败处理 & 丢弃本次结果 & 以类型化记录留存，避免重复 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{0.8em}
+  \begin{alertblock}{判据}
+    若智能体在运行结束后无法保留新增能力，则其行为等价于一次性求解器。
+    \textbf{能力能否跨运行累积，是区分二者的可操作判据。}
+  \end{alertblock}
+\end{frame}
+
+%% ---------------------------------------------------------------- 为何选 Ramsey
+\begin{frame}{检验场景的选择依据}
+  \textbf{选择标准}：该领域须提供\textbf{可自动判定的真值}，
+  否则无法区分“结果正确”与“智能体认为结果正确”。
+
+  \vspace{0.5em}
+  \begin{center}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    任务类型 & 正确性可否自动判定 \\
+    \midrule
+    文本生成 & 否 \\
+    程序合成 & 是（单元测试） \\
+    \textbf{给定图的单色团检测} & \textbf{是（有限检查）} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{0.6em}
+  \begin{block}{形式化}
+    给定 $n$ 顶点完全图的红蓝二染色，判定其是否含红色 $K_s$ 或蓝色 $K_t$，
+    是 $O(n^{s}+n^{t})$ 的有限检查。因此可以为该任务构造
+    \textbf{不可争辩的裁决者}，使“正确性”不依赖语言模型的判断。
+  \end{block}
+
+  \vspace{0.4em}
+  \footnotesize\color{black!70}
+  已知界：$43 \le R(5,5) \le 46$。因 43 顶点合法染色存在且删点保持合法性，
+  故 $n \le 43$ 全部存在；\textbf{开放靶子仅为 $n=44$ 与 $n=45$}。
+\end{frame}
+
+%% ---------------------------------------------------------------- 架构
+\begin{frame}{系统架构}
+  \begin{center}
+  \begin{tikzpicture}[
+      box/.style={draw=accent!60,fill=soft,rounded corners=3pt,
+                  minimum width=9.6cm,minimum height=0.92cm,
+                  align=center,font=\small},
+      lbl/.style={font=\scriptsize\color{black!60},align=left},
+      arr/.style={-{Stealth[length=2.4mm]},accent!70,thick}
+    ]
+    \node[box] (rt) {\textbf{Moonshine 运行时}（开源框架，核心逻辑未修改）\\
+      \scriptsize 研究循环、类型化研究日志、
+      记忆检索、验证门禁、 报告生成};
+    \node[box,below=0.68cm of rt] (pack)
+      {\textbf{ramsey-pack}：7 个确定性工具、4 份方法论技能、1 个智能体人格};
+    \node[box,below=0.68cm of pack] (core)
+      {\textbf{marsa} 计算内核、\textbf{growth} 生长回路};
+
+    \draw[arr] (pack) -- (rt);
+    \draw[arr] (core) -- (pack);
+    \node[lbl,right=0.35cm of rt.east,anchor=north west] {应用层};
+    \node[lbl,right=0.35cm of pack.east,anchor=north west] {领域层};
+    \node[lbl,right=0.35cm of core.east,anchor=north west] {计算层};
+  \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3em}
+  \begin{alertblock}{必须补充确定性层的原因}
+    该框架原生的验证机制为\textbf{语言模型评审}，其审查对象是证明过程，
+    无法判定“给定图不含 $K_5$”这类\textbf{计算性断言}。
+    将计算性断言提交语言模型评审，只能得到表述自信但无判别力的回答。
+  \end{alertblock}
+\end{frame}
+
+%% ---------------------------------------------------------------- 工具层
+\begin{frame}{确定性工具层}
+  \begin{center}
+  \scriptsize
+  \begin{tabular}{@{}llp{0.42\textwidth}@{}}
+    \toprule
+    \textbf{工具} & \textbf{功能} & \textbf{关键性质} \\
+    \midrule
+    \code{verify\_construction} & 精确验证构造 & 与搜索器\textbf{独立实现}，担任唯一仲裁者 \\
+    \code{enumerate\_family}    & 穷举结构族   & \textbf{判定性}：可给出族级排除结论 \\
+    \code{search}               & 定预算搜索   & 成功须经独立复核 \\
+    \code{violations}           & 统计违反度   & 精确且低开销 \\
+    \code{compare}              & 多算子比较   & \textbf{统计纪律自检} \\
+    \code{grow}                 & 注册自建工具 & 能力固化 \\
+    \code{prior}                & 查询累积经验 & 经验复用 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{0.5em}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.33\textwidth}
+      \begin{block}{约束优先于指导}
+        \footnotesize
+        \code{compare} 直接返回 \code{clear\_winner} 或
+        \code{inconclusive}，调用方只能照录。
+        诚实性由\textbf{接口返回值}保证，而非由提示词要求。
+      \end{block}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \begin{block}{验证自动化}
+        \footnotesize
+        构造合法性是有限检查，交由独立实现判定，
+        不以模型输出为依据。
+      \end{block}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \begin{block}{反馈结构化}
+        \footnotesize
+        每条结果标注类型（已证明 / 已测量 / 无定论）
+        与作用域，三者不得混用。
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ---------------------------------------------------------------- 自主运行实证
+\begin{frame}{自主运行的实证结果}
+  \textbf{实验设置}：研究模式，迭代预算 10 轮；实际执行
+  \key{86 次工具调用}，研究日志 500 行以上。
+
+  \vspace{0.5em}
+  \begin{enumerate}
+    \item \textbf{工具自造。} 框架的结构族枚举仅覆盖循环图；智能体自行实现
+      非循环 Cayley 群枚举器（Gray-code 遍历、分片与断点续跑）。
+      首版因逐掩码重建邻接矩阵而超时，其自行定位根因并改为平移构造。
+
+    \item \textbf{自建工具的自校验。} 在使用前设立 5 个锚点
+      （$n=38$ 应有解；$n=43,44,45,46$ 应无解），逐一复现引擎判定，
+      全部通过后才承认其实现可用。
+
+    \item \textbf{拒绝外推。} 对 23.8\% 的部分扫描，其结论为\emph{“这不是判定，不是排除”}。
+
+    \item \textbf{结论撤回。} 曾给出“强正则图型构造不可能”的论证，
+      后经复查发现该论证依赖无效必要条件，遂主动撤回并标注
+      \emph{“不得引用为已排除”}。
+  \end{enumerate}
+
+  \vspace{0.4em}
+  \begin{block}{}
+    \small
+    上述四类行为共同构成判据：系统具备\textbf{工具构造}、
+    \textbf{自我校验}与\textbf{证据不足时拒绝断言}的能力，
+    而非仅执行预设流程。
+  \end{block}
+\end{frame}
+
+%% ---------------------------------------------------------------- 生长回路
+\begin{frame}{生长回路：能力跨运行累积的机制}
+  \begin{center}
+  \begin{tikzpicture}[
+      st/.style={draw=accent!55,fill=soft,rounded corners=3pt,
+                 minimum width=2.6cm,minimum height=0.95cm,
+                 align=center,font=\scriptsize},
+      arr/.style={-{Stealth[length=2.2mm]},accent!75,thick},
+      note/.style={font=\tiny\color{black!60},align=center}
+    ]
+    \node[st] (w) {写出工具\\（运行 A）};
+    \node[st,right=0.55cm of w] (t) {编写测试};
+    \node[st,right=0.55cm of t] (g) {\code{grow}\\\code{register}};
+    \node[st,right=0.55cm of g,fill=accent!18] (n) {下次运行\\原生可用};
+    \draw[arr] (w) -- (t);
+    \draw[arr] (t) -- (g);
+    \draw[arr] (g) -- (n);
+    \node[note,below=0.18cm of g] {测试不通过\\则拒绝注册};
+    \node[note,below=0.18cm of n] {能力固化};
+  \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.2em}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{S1\quad 工具自扩展}
+        \footnotesize
+        注册接口强制要求提供测试文件；缺失即返回错误。
+        \textbf{未经验证的自建工具会将其错误结果传播至后续全部运行，
+        且难以归因，其危害大于缺少该工具。}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{S2\quad 能力测量}
+        \footnotesize
+        16 题留出基准，全部答案来自本项目自身的完整枚举。
+        主指标为 \textbf{通过题数 / 总题数}；
+        \textbf{因工具缺失而跳过者计为未通过}。
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.3em}
+  \begin{block}{S3\quad 策略先验}
+    \footnotesize
+    每次算子比较自动入库；后续以一次查询替代多轮测量。
+    推荐须满足\textbf{跨 $\ge 2$ 次独立实验一致}且\textbf{均值差超过噪声地板}，
+    否则返回 \code{inconclusive} 且不给出推荐值。推荐不跨 $n$ 迁移。
+  \end{block}
+\end{frame}
+
+%% ---------------------------------------------------------------- 能力测量
+\begin{frame}{能力增长的可测量证据}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \begin{tikzpicture}[x=0.97cm,y=0.044cm]
+        %% 坐标轴
+        \draw[black!45,-{Stealth[length=2mm]}] (0,0) -- (0,112);
+        \draw[black!45] (0,0) -- (5.75,0);
+        %% 网格与刻度
+        \foreach \y in {25,50,75,100}{
+          \draw[black!12] (0,\y) -- (5.7,\y);
+          \node[left,font=\tiny,black!60] at (0,\y) {\y};
+        }
+        \node[font=\tiny,black!60,rotate=90,anchor=south] at (-0.75,56) {基准通过率(\%)};
+        %% 柱
+        \foreach \i/\v/\cov in {1/76.9/1, 2/100/2, 3/100/2, 4/100/3, 5/100/3}{
+          \fill[accent!55] (\i-0.28,0) rectangle (\i+0.28,\v);
+          \node[above,font=\tiny] at (\i,\v) {\v};
+          \node[below,font=\tiny] at (\i,-2) {\i};
+          \node[below,font=\tiny,black!55] at (\i,-9) {\cov};
+        }
+        \node[font=\tiny,black!60] at (3,-19) {运行序号};
+        \node[font=\tiny,black!60] at (3,-26) {下行数字为工具覆盖种类数};
+      \end{tikzpicture}
+    \end{column}
+
+    \begin{column}{0.50\textwidth}
+      \begin{block}{读数}
+        \footnotesize
+        \begin{tabular}{@{}ccc@{}}
+          \toprule
+          运行 & 通过率 & 工具覆盖 \\
+          \midrule
+          1 & 76.9\% & 1 \\
+          2 & 100.0\% & 2 \\
+          4 & 100.0\% & 3 \\
+          5 & 100.0\% & 3 \\
+          \bottomrule
+        \end{tabular}
+        \vspace{0.4em}
+
+        首末对比：\key{+23.1 个百分点}，工具覆盖 \key{+2 种}。
+      \end{block}
+
+      \begin{block}{指标设计的取舍}
+        \footnotesize
+        若以“通过 / 实际尝试”为主指标，则因工具缺失而跳过者不计入分母，
+        能力下降无法体现。改用绝对指标后，
+        \textbf{能力退化在曲线上可见}。
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ---------------------------------------------------------------- 数学产出
+\begin{frame}{领域产出：判定性结论}
+  \begin{center}
+  \scriptsize
+  \begin{tabular}{@{}p{0.52\textwidth}p{0.36\textwidth}@{}}
+    \toprule
+    \textbf{结论} & \textbf{类型与作用域} \\
+    \midrule
+    循环图族在 $n\in\{39,42,43,44,45,46\}$ 上无解 & 已证明（全空间枚举） \\
+    循环图族在 $n\in\{30\text{--}38,40,41\}$ 上有解 & 已证明（全空间枚举） \\
+    循环图族存在性非单调（$n=33$ 有解，$34,35$ 无解） & 已证明 \\
+    $R(4,6)$ 循环族在 $n=36\text{--}41$ 全无解 & 已证明（子族排除） \\
+    \textbf{44/45 阶非循环阿贝尔族各仅 1 个} & 已证明 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{0.6em}
+  \begin{block}{智能体在运行中给出的群结构收窄}
+    \footnotesize
+    因 $Z_{44}$ 同构于 $Z_{11}\times Z_4$、$Z_{45}$ 同构于 $Z_9\times Z_5$，二者均为循环群，
+    而循环族已被排除，故：
+    \begin{itemize}
+      \item $n=44$：待枚举的非循环阿贝尔族仅 $Z_{11}\times Z_2\times Z_2$，
+        空间 $2^{23}=8{,}388{,}608$；
+      \item $n=45$：仅 $Z_5\times Z_3\times Z_3$，空间 $2^{22}=4{,}194{,}304$。
+    \end{itemize}
+    \textbf{待枚举范围由 4 个族缩减为 2 个。}该结论已独立复算确认。
+  \end{block}
+
+  \vspace{0.2em}
+  \footnotesize\color{black!65}
+  说明：$R(5,5)$ 的已知界未被改进。本项目的产出集中于智能体能力层面，
+  数学结论为其副产物。
+\end{frame}
+
+%% ---------------------------------------------------------------- 演示
+\begin{frame}[fragile]{现场演示}
+  \begin{block}{运行入口}
+    \begin{semiverbatim}
+\small
+cd D:\\myagent
+.\\marsa.ps1 doctor     \ \ \ \# 六项环境自检
+.\\marsa.ps1 tools      \ \ \ \# 已固化能力与能力曲线
+.\\marsa.ps1 run "用 ramsey_compare 比较 n=44 上两个算子，
+                 各 4 个 seed、8 秒预算"
+    \end{semiverbatim}
+  \end{block}
+
+  \vspace{0.3em}
+  \begin{block}{预期观察}
+    \footnotesize
+    \begin{enumerate}
+      \item 智能体先调用 \code{ramsey\_prior} 查询先验，再决定是否重新测量；
+      \item \code{ramsey\_compare} 返回 \code{inconclusive} 时，
+        其\textbf{照录“无定论”}，不改写为“略优”。
+    \end{enumerate}
+    \vspace{0.3em}
+    \textbf{该行为即为设计目标}：比较结果落在种子噪声内时，
+    系统拒绝给出优劣判断。
+  \end{block}
+
+  \vspace{0.3em}
+  \footnotesize\color{black!70}
+  备用方案：\code{.\textbackslash marsa.ps1 benchmark} —— 纯确定性、不调用语言模型、
+  30 秒内完成，不受网络与接口状态影响。
+\end{frame}
+
+%% ---------------------------------------------------------------- 局限
+\begin{frame}{局限与后续工作}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{当前局限}
+        \scriptsize
+        \begin{tabular}{@{}p{0.40\textwidth}p{0.46\textwidth}@{}}
+          \toprule
+          项 & 状态 \\
+          \midrule
+          $R(5,5)$ 的界 & 未改进（仍为 43--46） \\
+          上界（证明型） & 不支持，仅有构造工具 \\
+          巨大族枚举 & 受算力限制（$2^{23}$ 可行，$2^{43}$ 不可行） \\
+          统计显著性 & 由工具层保证，智能体自身不具备 \\
+          长时程无人值守 & 已验证 15 轮 \\
+          \bottomrule
+        \end{tabular}
+      \end{block}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \begin{block}{后续工作（按优先级）}
+        \scriptsize
+        \begin{enumerate}
+          \item \textbf{S4 技能自蒸馏}：由失败路径提炼规则并改写自身技能，
+            须配置回归门禁。该层风险最高。
+          \item \textbf{Tier 2 基准}：以完整自主运行度量决策能力
+            （现有基准仅覆盖工具层）。
+          \item 完成两个待枚举族：
+            $Z_{11}\times Z_2\times Z_2$ @ $n=44$；
+            $Z_5\times Z_3\times Z_3$ @ $n=45$。
+          \item 跨会话状态延续。
+        \end{enumerate}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.4em}
+  \begin{alertblock}{一条由实测确立的工作原则}
+    \footnotesize
+    在智能体自行归纳的六处错误中，五处源于\textbf{间接推理}
+    （必要条件误用、公式记忆、计数转述），一处于报告转述；
+    而经\textbf{枚举与直接验证}得到的四条结论均未出错。
+
+    \vspace{0.2em}
+    因此：对“证明性”论述一律以工具复核；对工具直接给出的判定可以采信。
+    \textbf{验证器是唯一仲裁者。}
+  \end{alertblock}
+\end{frame}
+
+%% ---------------------------------------------------------------- 结论
+\begin{frame}{结论}
+  \begin{block}{}
+    \normalsize
+    本文构建了一个具备能力自扩展机制的数学研究智能体，并给出其能力增长的
+    可测量证据。主要工作包括：
+    \begin{enumerate}
+      \item 在开源框架之上补充\textbf{确定性验证层}，使计算性断言可被精确裁决，
+        并将统计纪律内置于工具接口；
+      \item 实现\textbf{生长回路}，使运行中产生的代码经验经校验后固化为
+        后续运行可直接调用的能力，并以留出基准度量其增益；
+      \item 以三次真实自主运行给出实证：系统可自行构造工具、自我校验、
+        在证据不足时拒绝断言，并在获得反证时撤回结论。
+    \end{enumerate}
+  \end{block}
+
+  \vspace{0.6em}
+  \begin{block}{}
+    \normalsize
+    \centering
+    传统方法改进的是\textbf{解}；本系统改进的是\textbf{自身}。\\[0.35em]
+    能力曲线表明：在无人工干预的条件下，
+    系统可以做到\textbf{下一次运行优于上一次}。
+  \end{block}
+
+  \vspace{0.4em}
+  \footnotesize\color{black!60}
+  代码与运行记录：\texttt{github.com/Bitwild4ever/marsa-ramsey-agent}
+\end{frame}
+
+\end{document}
