@@ -84,6 +84,15 @@ Do this before spending any budget.
 - When you do search, use a fixed wall-clock budget and several seeds, and compare
   means rather than best runs. Load `$search-operator-iteration` for the protocol, and
   follow it: this is where false comparative claims are usually born.
+- **Check the strategy prior before re-measuring.** Call
+  `ramsey_prior(action="recommend", n=..., budget=...)`. Every earlier `ramsey_compare`
+  already recorded its result there, so the answer may cost one call instead of many runs.
+  - `recommend` — use `recommended`, and say the choice came from prior evidence.
+  - `no_data` — this cell was never measured; run `ramsey_compare` (which feeds the table).
+  - `inconclusive` / `inconsistent_across_episodes` / `too_few_samples` — **there is no
+    recommendation.** Do not read the lowest mean out of `operators` and act on it; that is
+    exactly the over-generalisation the noise floor exists to prevent.
+  - Never transfer a recommendation across `n`. The cell key includes `n`, `s`, `t`, `budget`.
 - If a family is excluded at the target `n`, **generalise the family** (for example from
   cyclic to non-cyclic Cayley groups) rather than searching the same family harder.
 

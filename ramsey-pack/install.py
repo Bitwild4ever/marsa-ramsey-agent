@@ -35,6 +35,7 @@ try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
         ramsey_compare,
         ramsey_enumerate_family,
         ramsey_grow,
+        ramsey_prior,
         ramsey_search,
         ramsey_verify_construction,
         ramsey_violations,
@@ -44,7 +45,7 @@ try:  # 允许在不安装 marsa 时照常使用 Moonshine 的其余功能
 except Exception as _exc:  # noqa: BLE001
     ramsey_enumerate_family = ramsey_search = None
     ramsey_verify_construction = ramsey_violations = None
-    ramsey_compare = ramsey_grow = None
+    ramsey_compare = ramsey_grow = ramsey_prior = None
     _RAMSEY_TOOLS_AVAILABLE = False
     _RAMSEY_IMPORT_ERROR = str(_exc)
 
@@ -113,6 +114,11 @@ HANDLER_BLOCK = '''            # --- 本项目新增的确定性工具 ---
                 if _RAMSEY_TOOLS_AVAILABLE
                 else _ramsey_unavailable("ramsey_grow")
             ),
+            "ramsey_prior": (
+                (lambda runtime, **kwargs: ramsey_prior(runtime, **kwargs))
+                if _RAMSEY_TOOLS_AVAILABLE
+                else _ramsey_unavailable("ramsey_prior")
+            ),
             # agent 自己注册的工具（S1 工具自扩展）
             **_ramsey_dynamic_handlers(),
 '''
@@ -154,8 +160,10 @@ def _ensure_grow_reexport(tools_module: Path) -> None:
         "# 这样 registry.py 的补丁只需要 import 一个模块。\n"
         "try:  # noqa: F401\n"
         "    from .ramsey_grow import ramsey_grow\n"
+        "    from .ramsey_prior import ramsey_prior\n"
         "except ImportError:  # 退化路径：非包上下文\n"
         "    from ramsey_grow import ramsey_grow  # noqa: F401\n"
+        "    from ramsey_prior import ramsey_prior  # noqa: F401\n"
     )
     tools_module.write_text(text, encoding="utf-8")
 
@@ -178,6 +186,8 @@ def main() -> int:
                  moon / "tools" / "ramsey_tools.py")
     shutil.copy2(PACK / "tools" / "ramsey_grow.py",
                  moon / "tools" / "ramsey_grow.py")
+    shutil.copy2(PACK / "tools" / "ramsey_prior.py",
+                 moon / "tools" / "ramsey_prior.py")
     # ramsey_tools 需要能从同包导入 grow
     _ensure_grow_reexport(moon / "tools" / "ramsey_tools.py")
     print(f"[1/5] 已复制 ramsey_tools.py + ramsey_grow.py -> {moon / 'tools'}")

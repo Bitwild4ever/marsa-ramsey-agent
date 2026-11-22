@@ -217,6 +217,50 @@
       },
       "optional": true,
       "note": "检查它算的是布尔真值而不是具体计数"
+    },
+    {
+      "id": "prior_n44",
+      "kind": "prior",
+      "tool": "ramsey_prior",
+      "args": {
+        "action": "recommend",
+        "n": 44,
+        "s": 5,
+        "t": 5,
+        "budget": 3.0
+      },
+      "expect": {
+        "status": "recommend",
+        "recommended": "tabu_focus"
+      },
+      "note": "先验表在 n=44/3s 单元上应给出推荐，且经独立复测支持"
+    },
+    {
+      "id": "prior_no_transfer",
+      "kind": "prior",
+      "tool": "ramsey_prior",
+      "args": {
+        "action": "recommend",
+        "n": 47,
+        "s": 5,
+        "t": 5,
+        "budget": 3.0
+      },
+      "expect": {
+        "status": "no_data",
+        "recommended": null
+      },
+      "note": "纪律检验：未测过的单元必须拒绝迁移，不能套用 n=44 的结论"
+    },
+    {
+      "id": "prior_stats",
+      "kind": "prior",
+      "tool": "ramsey_prior",
+      "args": {
+        "action": "stats"
+      },
+      "expect": {},
+      "note": "先验表可查询"
     }
   ]
 }

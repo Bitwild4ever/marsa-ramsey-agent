@@ -240,38 +240,68 @@ def compare(operators, n: int, s: int = 5, t: int = 5, budget: float = 5.0,
         second_best=second, margin=margin, noise_floor=noise,
     )
 
+    def _finish(status: str, conclusion: str, **extra) -> Dict[str, Any]:
+        """收尾：先把这次比较记进策略先验，再返回。
+
+        记录失败不影响本次比较的成功——先验表写不进去不该让一次有效的
+        测量变成错误。数据自动累积，agent 不需要额外动作。
+        """
+        detail.update(extra)
+        try:
+            from .prior import record_comparison
+            record_comparison(dict(detail, verdict=extra.get("verdict", status)))
+        except Exception:                                       # noqa: BLE001
+            pass
+        return _result("compare", status, conclusion, **detail)
+
     if solved_ops:
         winning = min(solved_ops, key=lambda o: (per[o]["min"], per[o]["mean"]))
-        detail.update(
+        return _finish(
+            "solved",
+            (f"判定：算子 {winning} 在全部 {seeds} 个 seed 上"
+             f"找到合法构造并经独立验证 ⇒ R({s},{t}) > {n}。"
+             f"{'其余算子也有解：' + ', '.join(sorted(set(solved_ops) - {winning})) if len(solved_ops) > 1 else ''}"
+             ).strip(),
             winner=winning, verdict="solved", solved_operators=solved_ops,
-            conclusion=(f"判定：算子 {winning} 在全部 {seeds} 个 seed 上"
-                        f"找到合法构造并经独立验证 ⇒ R({s},{t}) > {n}。"
-                        f"{'其余算子也有解：' + ', '.join(sorted(set(solved_ops) - {winning})) if len(solved_ops) > 1 else ''}"
-                        ).strip(),
         )
-        return _result("compare", "solved", detail.pop("conclusion"), **detail)
 
     if margin > noise:
-        detail.update(
+        return _finish(
+            "clear_winner",
+            (f"判定：在固定 {budget}s 预算、{seeds} 个 seed 下，"
+             f"{best} 优于 {second}（均值差 {margin} > 噪声地板 "
+             f"{noise}）。这是**已测量**的相对优劣，不是任何存在性结论。"),
             winner=best, verdict="clear_winner",
-            conclusion=(f"判定：在固定 {budget}s 预算、{seeds} 个 seed 下，"
-                        f"{best} 优于 {second}（均值差 {margin} > 噪声地板 "
-                        f"{noise}）。这是**已测量**的相对优劣，不是任何存在性结论。"
-                        ),
         )
-        return _result("compare", "clear_winner", detail.pop("conclusion"), **detail)
 
-    detail.update(
+    return _finish(
+        "inconclusive",
+        (f"**无定论**：{best}（均值 {per[best]['mean']}, 标准差 "
+         f"{per[best]['std']}）与 {second}（均值 "
+         f"{per[second]['mean']}, 标准差 {per[second]['std']}）"
+         f"的差距 {margin} ≤ 噪声地板 {noise}。"
+         f"不得宣称二者有优劣；若需要分出高下，应增加 seed 数或"
+         f"预算，并重跑本工具。"),
         winner=None, verdict="inconclusive_within_noise",
-        conclusion=(f"**无定论**：{best}（均值 {per[best]['mean']}, 标准差 "
-                    f"{per[best]['std']}）与 {second}（均值 "
-                    f"{per[second]['mean']}, 标准差 {per[second]['std']}）"
-                    f"的差距 {margin} ≤ 噪声地板 {noise}。"
-                    f"不得宣称二者有优劣；若需要分出高下，应增加 seed 数或"
-                    f"预算，并重跑本工具。"
-                    ),
     )
-    return _result("compare", "inconclusive", detail.pop("conclusion"), **detail)
+
+
+def prior_lookup(n: int, s: int = 5, t: int = 5, budget: float = 5.0,
+                 min_samples: int = 3) -> Dict[str, Any]:
+    """查询策略先验：这个单元历史上哪个算子最好。
+
+    推荐服从与 ramsey_compare 相同的统计纪律：证据不足或差距在噪声内，
+    返回 inconclusive 而不是猜一个。
+    """
+    from . import prior as _prior
+    return _prior.recommend(n=n, s=s, t=t, budget=budget,
+                            min_samples=min_samples)
+
+
+def prior_stats() -> Dict[str, Any]:
+    """先验表总览。"""
+    from . import prior as _prior
+    return _prior.stats()
 
 
 ACTIONS = {
@@ -280,4 +310,6 @@ ACTIONS = {
     "verify": verify_construction,
     "violations": violations,
     "compare": compare,
+    "prior": prior_lookup,
+    "prior_stats": prior_stats,
 }

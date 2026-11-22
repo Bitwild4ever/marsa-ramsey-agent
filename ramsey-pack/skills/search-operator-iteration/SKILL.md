@@ -36,11 +36,15 @@ Measuring a method fairly is harder than inventing one, and most false claims in
 - **Re-storing past solutions and warm-starting from them made things worse**, in both a short and a long budget regime, and the mechanism was identified: the stored near-solutions were worse than what a fresh random restart reaches, so warm-starting anchored the search in a mediocre basin. Do not re-attempt solution-level memory without new evidence.
 
 ## Tool Calls
-- **`ramsey_compare`**: the **primary** tool for this skill. Give it the operators,
+- **`ramsey_prior`**: check this **first**. Every earlier comparison was recorded, so it may
+  already know which operator wins for this cell — one call instead of many runs.
+  `recommended` null means **no recommendation exists**; do not pick the lowest mean yourself.
+- **`ramsey_compare`**: the primary measurement tool. Give it the operators,
   a fixed `budget`, and a `seeds` count; it runs them all and returns an
   authoritative `verdict` (`solved` / `clear_winner` / `inconclusive_within_noise`)
   plus a pre-written `conclusion`. **Report that verdict verbatim.** It exists
-  precisely because these comparisons are usually over-claimed.
+  precisely because these comparisons are usually over-claimed. Each call also
+  records itself into the prior table, so measurement is never wasted.
 - `ramsey_search`: a single run — useful for exploration, **never** sufficient for a comparison.
 - `ramsey_violations`: cheap exact reading of a candidate's quality.
 - `ramsey_verify_construction`: confirm any apparent success before counting it.
